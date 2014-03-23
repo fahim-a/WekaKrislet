@@ -8,8 +8,7 @@
 //    Modified by:      Edgar Acosta
 //    Date:             March 4, 2008
 
-import java.lang.Math;
-import java.util.regex.*;
+import java.util.regex.Pattern;
 
 class Brain extends Thread implements SensorInput {
 	// ---------------------------------------------------------------------------
@@ -26,6 +25,11 @@ class Brain extends Thread implements SensorInput {
 		// m_number = number;
 		m_playMode = playMode;
 		start();
+	}
+
+	@Override
+	public void run() {
+		
 	}
 
 	// ---------------------------------------------------------------------------
@@ -51,8 +55,7 @@ class Brain extends Thread implements SensorInput {
 	// Allways know where the goal is.
 	// Move to a place on my side on a kick_off
 	// ************************************************
-
-	public void run() {
+	public void original_run() {
 		ObjectInfo object;
 
 		// first put it somewhere on my side

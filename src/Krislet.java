@@ -8,17 +8,45 @@
 //      By:               Edgar Acosta
 //
 //********************************************
-import java.io.*;
-import java.net.*;
-import java.util.*;
-import java.util.regex.*;
+import java.io.File;
+import java.io.IOException;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.net.SocketException;
+import java.util.Arrays;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import weka.classifiers.trees.J48;
+import weka.core.Instances;
+import weka.core.converters.ConverterUtils.DataSource;
 
 //***************************************************************************
 //
 //	This is main object class
 //
 //***************************************************************************
-class Krislet implements SendCommand {
+public class Krislet implements SendCommand {
+	private static Instances trainingData;
+	private static J48 decision_tree;
+
+	// ===========================================================================
+	// Private members
+	// class members
+	private DatagramSocket m_socket; // Socket to communicate with server
+	private InetAddress m_host; // Server address
+	private int m_port; // server port
+	private String m_team; // team name
+	private SensorInput m_brain; // input for sensor information
+	private boolean m_playing; // controls the MainLoop
+	private Pattern message_pattern = Pattern.compile("^\\((\\w+?)\\s.*");
+	private Pattern hear_pattern = Pattern
+			.compile("^\\(hear\\s(\\w+?)\\s(\\w+?)\\s(.*)\\).*");
+	// private Pattern coach_pattern = Pattern.compile("coach");
+	// constants
+	private static final int MSG_SIZE = 4096; // Size of socket buffer
+
 	// ===========================================================================
 	// Initialization member functions
 
@@ -45,6 +73,7 @@ class Krislet implements SendCommand {
 		String hostName = new String("");
 		int port = 6000;
 		String team = new String("Krislet3");
+		String trainingLogFile = null;
 
 		try {
 			// First look for parameters
@@ -55,6 +84,14 @@ class Krislet implements SendCommand {
 					port = Integer.parseInt(a[c + 1]);
 				} else if (a[c].compareTo("-team") == 0) {
 					team = a[c + 1];
+				} else if (a[c].compareTo("-trainingLog") == 0) {
+					trainingLogFile = a[c + 1];
+
+					File f = new File(trainingLogFile);
+					if (!f.exists()) {
+						System.err
+								.println("The specified trainingLog file does not exist!");
+					}
 				} else {
 					throw new Exception();
 				}
@@ -68,6 +105,8 @@ class Krislet implements SendCommand {
 			System.err.println("    host        host_name    localhost");
 			System.err.println("    port        port_number  6000");
 			System.err.println("    team        team_name    Kris");
+			System.err
+					.println("    trainingLog path         ./trainingLog.txt");
 			System.err.println("");
 			System.err.println("    Example:");
 			System.err
@@ -77,11 +116,40 @@ class Krislet implements SendCommand {
 			return;
 		}
 
-		Krislet player = new Krislet(InetAddress.getByName(hostName), port,
-				team);
+		try {
+			// TODO Pass into parser class that takes the training log data and
+			// generates the corresponding weka arff file
+			System.out.println("Reading in training file: " + trainingLogFile);
 
-		// enter main loop
-		player.mainLoop();
+			String wekaFilePath = ""; // TODO
+			System.out.println("Generated Weka ARFF file: " + wekaFilePath);
+			// read training data from arff file
+			DataSource source = new DataSource(wekaFilePath);
+			trainingData = source.getDataSet();
+			if (trainingData.classIndex() == -1)
+				trainingData.setClassIndex(trainingData.numAttributes() - 1);
+
+			// build a J48 tree from the training data
+			decision_tree = new J48();
+			decision_tree.buildClassifier(trainingData);
+
+			Krislet player = new Krislet(InetAddress.getByName(hostName), port,
+					team);
+
+			// enter main loop
+			player.mainLoop();
+
+		} catch (Exception e) {
+
+		}
+	}
+
+	public Instances getTrainingData() {
+		return trainingData;
+	}
+
+	public J48 getDecision_tree() {
+		return decision_tree;
 	}
 
 	// ---------------------------------------------------------------------------
@@ -265,21 +333,4 @@ class Krislet implements SendCommand {
 		}
 		return new String(buffer);
 	}
-
-	// ===========================================================================
-	// Private members
-	// class members
-	private DatagramSocket m_socket; // Socket to communicate with server
-	private InetAddress m_host; // Server address
-	private int m_port; // server port
-	private String m_team; // team name
-	private SensorInput m_brain; // input for sensor information
-	private boolean m_playing; // controls the MainLoop
-	private Pattern message_pattern = Pattern.compile("^\\((\\w+?)\\s.*");
-	private Pattern hear_pattern = Pattern
-			.compile("^\\(hear\\s(\\w+?)\\s(\\w+?)\\s(.*)\\).*");
-	// private Pattern coach_pattern = Pattern.compile("coach");
-	// constants
-	private static final int MSG_SIZE = 4096; // Size of socket buffer
-
 }

@@ -3,7 +3,7 @@ import weka.core.Instance;
 import weka.core.Instances;
 import weka.core.converters.ConverterUtils.DataSource;
 
-public class Pinky {
+public class PinkyTestClass {
 	public static void main(String[] args) {
 		try {
 			// read training data from arff file
@@ -21,7 +21,7 @@ public class Pinky {
 
 			// decide on next agent action based on current environment
 			// perception and decision tree
-			SoccerAction decidedAction = getNextAction(getCurrentEnvironment(),
+			SoccerAction decidedAction = getNextAction(getEnvironment(),
 					decision_tree, sampleInstance);
 			System.out.println(decidedAction);
 		} catch (Exception e) {
@@ -29,7 +29,7 @@ public class Pinky {
 		}
 	}
 
-	private static PerceivedEnvironment getCurrentEnvironment() {
+	private static PerceivedEnvironment getEnvironment() {
 		// ?,?,66.0,-15.0,60.3,15.0,?,turn
 		// return new PerceivedEnvironment(-1, -1, 66.0, -15.0, 60.3, 15.0,
 		// null);
