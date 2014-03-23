@@ -53,6 +53,58 @@ public class PerceivedEnvironment implements Serializable {
 		super();
 	}
 
+	/**
+	 * Generates the class based on a string version of Krislet's perceived
+	 * environment
+	 * 
+	 * @param envString
+	 *            (e.g. '0.4,-88.0,26.8,3.0,2.7,-80.0,?')
+	 */
+	public PerceivedEnvironment(String envString) {
+		super();
+		if (envString != null && !envString.isEmpty()) {
+			String[] input = envString.split(",");
+
+			if (input != null && input.length == 7) {
+
+				try {
+					distanceToBall = Double.parseDouble(input[0]);
+				} catch (NumberFormatException | NullPointerException e) {
+				}
+
+				try {
+					directionToBall = Double.parseDouble(input[1]);
+				} catch (NumberFormatException | NullPointerException e) {
+				}
+
+				try {
+					distanceToNet = Double.parseDouble(input[2]);
+				} catch (NumberFormatException | NullPointerException e) {
+				}
+
+				try {
+					directionToNet = Double.parseDouble(input[3]);
+				} catch (NumberFormatException | NullPointerException e) {
+				}
+
+				try {
+					distanceToPlayer = Double.parseDouble(input[4]);
+				} catch (NumberFormatException | NullPointerException e) {
+				}
+
+				try {
+					directionToPlayer = Double.parseDouble(input[5]);
+				} catch (NumberFormatException | NullPointerException e) {
+				}
+
+				try {
+					playerTeam = PlayerTeam.valueOf(input[6]);
+				} catch (IllegalArgumentException | NullPointerException e) {
+				}
+			}
+		}
+	}
+
 	public double getDistanceToBall() {
 		return distanceToBall;
 	}

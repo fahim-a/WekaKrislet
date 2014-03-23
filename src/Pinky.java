@@ -23,6 +23,7 @@ public class Pinky {
 			// perception and decision tree
 			SoccerAction decidedAction = getNextAction(getCurrentEnvironment(),
 					decision_tree, sampleInstance);
+			System.out.println(decidedAction);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -33,7 +34,9 @@ public class Pinky {
 		// return new PerceivedEnvironment(-1, -1, 66.0, -15.0, 60.3, 15.0,
 		// null);
 		// 0.4,-88.0,26.8,3.0,2.7,-80.0,?,kick
-		return new PerceivedEnvironment(0.4, -88.0, 26.8, 3.0, 2.7, -80.0, null);
+		// return new PerceivedEnvironment(0.4, -88.0, 26.8, 3.0, 2.7, -80.0,
+		// null);
+		return new PerceivedEnvironment("0.4,-88.0,26.8,3.0,2.7,-80.0,?");
 	}
 
 	private static SoccerAction getNextAction(
@@ -42,7 +45,6 @@ public class Pinky {
 		Instance envIntstance = currentEnvironment
 				.buildWekaInstance(sampleInstance);
 		double classResult = decision_tree.classifyInstance(envIntstance);
-		System.out.println(SoccerAction.values()[(int) classResult]);
 		return SoccerAction.values()[(int) classResult];
 	}
 }
