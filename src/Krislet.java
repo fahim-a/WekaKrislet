@@ -99,7 +99,7 @@ public class Krislet implements SendCommand {
 
 			if (trainingLogFile == null || trainingLogFile.isEmpty())
 				throw new Exception("Training data file could not be found!");
-			
+
 		} catch (Exception e) {
 			System.err.println("");
 			System.err.println("USAGE: krislet [-parameter value]");
@@ -109,8 +109,7 @@ public class Krislet implements SendCommand {
 			System.err.println("    host        host_name    localhost");
 			System.err.println("    port        port_number  6000");
 			System.err.println("    team        team_name    Kris");
-			System.err
-					.println("    trainingLog path         ./trainingLog.txt");
+			System.err.println("    trainingLog path         MANDATORY");
 			System.err.println("");
 			System.err.println("    Example:");
 			System.err
