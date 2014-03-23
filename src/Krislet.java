@@ -14,13 +14,21 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Enumeration;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import weka.classifiers.Classifier;
+import weka.classifiers.meta.FilteredClassifier;
 import weka.classifiers.trees.J48;
+import weka.core.Attribute;
+import weka.core.Instance;
 import weka.core.Instances;
 import weka.core.converters.ConverterUtils.DataSource;
+import weka.filters.unsupervised.attribute.Remove;
 
 //***************************************************************************
 //
@@ -29,7 +37,7 @@ import weka.core.converters.ConverterUtils.DataSource;
 //***************************************************************************
 public class Krislet implements SendCommand {
 	private static Instances trainingData;
-	private static J48 decision_tree;
+	private static Classifier decision_tree;
 
 	// ===========================================================================
 	// Private members
@@ -137,8 +145,34 @@ public class Krislet implements SendCommand {
 				trainingData.setClassIndex(trainingData.numAttributes() - 1);
 
 			// build a J48 tree from the training data
-			decision_tree = new J48();
-			decision_tree.buildClassifier(trainingData);
+			J48 tree = new J48();
+
+			boolean discardAttributes = false; // TODO Read in properties to
+												// determine if certain
+												// attributes should be
+												// discarded and not taken into
+												// account
+			if (discardAttributes) {
+				Remove rm = new Remove();
+
+				Instance sampleInstance = trainingData.firstInstance();
+				String removedAttributes = "blah, blah"; // TODO Obtain from
+															// properties file
+
+				int[] attributeIndicesToRemove = extractAttributeIndicesToRemove(
+						sampleInstance, removedAttributes);
+				rm.setAttributeIndicesArray(attributeIndicesToRemove);
+
+				FilteredClassifier fc = new FilteredClassifier();
+				fc.setFilter(rm);
+				fc.setClassifier(tree);
+				// train and make predictions
+				fc.buildClassifier(trainingData);
+				decision_tree = fc;
+			} else {
+				tree.buildClassifier(trainingData);
+				decision_tree = tree;
+			}
 
 			Krislet player = new Krislet(InetAddress.getByName(hostName), port,
 					team);
@@ -151,11 +185,37 @@ public class Krislet implements SendCommand {
 		}
 	}
 
+	private static int[] extractAttributeIndicesToRemove(
+			Instance sampleInstance, String removedAttributes) {
+		String toRemove[] = removedAttributes.split(",");
+		List<String> toRemoveList = Arrays.asList(toRemove);
+
+		List<Integer> returnList = new ArrayList<Integer>();
+
+		@SuppressWarnings("rawtypes")
+		Enumeration iter = sampleInstance.enumerateAttributes();
+		int i = 0;
+		while (iter.hasMoreElements()) {
+			Object attr = iter.nextElement();
+			if (attr != null && attr instanceof Attribute) {
+				Attribute a = (Attribute) attr;
+				if (toRemoveList.contains(a.name()))
+					returnList.add(i);
+			}
+			i++;
+		}
+
+		int[] returnArray = new int[returnList.size()];
+		for (int j = 0; j < returnList.size(); j++)
+			returnArray[j] = returnList.get(j);
+		return returnArray;
+	}
+
 	public static Instances getTrainingData() {
 		return trainingData;
 	}
 
-	public static J48 getDecision_tree() {
+	public static Classifier getDecision_tree() {
 		return decision_tree;
 	}
 

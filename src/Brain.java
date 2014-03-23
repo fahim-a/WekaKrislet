@@ -10,7 +10,7 @@
 
 import java.util.regex.Pattern;
 
-import weka.classifiers.trees.J48;
+import weka.classifiers.Classifier;
 import weka.core.Instance;
 import weka.core.Instances;
 
@@ -40,7 +40,7 @@ class Brain extends Thread implements SensorInput {
 		while (!m_timeOver) {
 			try {
 				Instances trainingData = Krislet.getTrainingData();
-				J48 decisionTree = Krislet.getDecision_tree();
+				Classifier decisionTree = Krislet.getDecision_tree();
 				Instance sampleInstance = trainingData.firstInstance();
 
 				VisualInfo perceivedEnv = m_memory.getInfo();
@@ -94,7 +94,7 @@ class Brain extends Thread implements SensorInput {
 	}
 
 	private SoccerAction getNextAction(PerceivedEnvironment currentEnvironment,
-			J48 decision_tree, Instance sampleInstance) throws Exception {
+			Classifier decision_tree, Instance sampleInstance) throws Exception {
 		Instance envIntstance = currentEnvironment
 				.buildWekaInstance(sampleInstance);
 		double classResult = decision_tree.classifyInstance(envIntstance);
