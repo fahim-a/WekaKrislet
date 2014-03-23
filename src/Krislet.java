@@ -140,7 +140,7 @@ public class Krislet implements SendCommand {
 			player.mainLoop();
 
 		} catch (Exception e) {
-
+			System.err.println("Could not launch Krislet: " + e);
 		}
 	}
 
