@@ -3,7 +3,7 @@ import weka.core.Instance;
 import weka.core.Instances;
 import weka.core.converters.ConverterUtils.DataSource;
 
-public class PinkyTestClass {
+public class PinkyTest {
 	public static void main(String[] args) {
 		try {
 			// read training data from arff file
