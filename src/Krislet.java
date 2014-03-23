@@ -144,11 +144,11 @@ public class Krislet implements SendCommand {
 		}
 	}
 
-	public Instances getTrainingData() {
+	public static Instances getTrainingData() {
 		return trainingData;
 	}
 
-	public J48 getDecision_tree() {
+	public static J48 getDecision_tree() {
 		return decision_tree;
 	}
 

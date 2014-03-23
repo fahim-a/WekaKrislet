@@ -10,6 +10,10 @@
 
 import java.util.regex.Pattern;
 
+import weka.classifiers.trees.J48;
+import weka.core.Instance;
+import weka.core.Instances;
+
 class Brain extends Thread implements SensorInput {
 	// ---------------------------------------------------------------------------
 	// This constructor:
@@ -29,7 +33,72 @@ class Brain extends Thread implements SensorInput {
 
 	@Override
 	public void run() {
-		
+		// first put it somewhere on my side
+		if (Pattern.matches("^before_kick_off.*", m_playMode))
+			m_krislet.move(-Math.random() * 52.5, 34 - Math.random() * 68.0);
+
+		while (!m_timeOver) {
+			try {
+				Instances trainingData = Krislet.getTrainingData();
+				J48 decisionTree = Krislet.getDecision_tree();
+				Instance sampleInstance = trainingData.firstInstance();
+
+				VisualInfo perceivedEnv = m_memory.getInfo();
+				// TODO Get string extracted from the perceived environment
+				String envString = "0.4,-88.0,26.8,3.0,2.7,-80.0,?";
+
+				PerceivedEnvironment pe = new PerceivedEnvironment(envString);
+				SoccerAction action = getNextAction(pe, decisionTree,
+						sampleInstance);
+				invokeKrisletAction(action);
+			} catch (Exception e) {
+				e.printStackTrace();
+				invokeKrisletAction(null);
+			}
+
+			// sleep one step to ensure that we will not send
+			// two commands in one cycle.
+			try {
+				Thread.sleep(2 * SoccerParams.simulator_step);
+			} catch (Exception e) {
+			}
+		}
+		m_krislet.bye();
+	}
+
+	private void invokeKrisletAction(SoccerAction action) {
+		ObjectInfo object;
+
+		switch (action) {
+		case DASH:
+			object = m_memory.getObject("ball");
+			m_krislet.dash(10 * object.m_distance);
+			break;
+		case KICK:
+			// We know where is ball and we can kick it
+			// so look for goal
+			if (m_side == 'l')
+				object = m_memory.getObject("goal r");
+			else
+				object = m_memory.getObject("goal l");
+			m_krislet.kick(100, object.m_direction);
+			break;
+		case TURN:
+			m_krislet.turn(40); // TODO Determine proper angle
+			break;
+		default:
+			m_krislet.turn_neck(40);
+			m_memory.waitForNewInfo();
+			break;
+		}
+	}
+
+	private SoccerAction getNextAction(PerceivedEnvironment currentEnvironment,
+			J48 decision_tree, Instance sampleInstance) throws Exception {
+		Instance envIntstance = currentEnvironment
+				.buildWekaInstance(sampleInstance);
+		double classResult = decision_tree.classifyInstance(envIntstance);
+		return SoccerAction.values()[(int) classResult];
 	}
 
 	// ---------------------------------------------------------------------------
