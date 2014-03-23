@@ -96,6 +96,10 @@ public class Krislet implements SendCommand {
 					throw new Exception();
 				}
 			}
+
+			if (trainingLogFile == null || trainingLogFile.isEmpty())
+				throw new Exception("Training data file could not be found!");
+			
 		} catch (Exception e) {
 			System.err.println("");
 			System.err.println("USAGE: krislet [-parameter value]");
@@ -123,6 +127,10 @@ public class Krislet implements SendCommand {
 
 			String wekaFilePath = ""; // TODO
 			System.out.println("Generated Weka ARFF file: " + wekaFilePath);
+
+			if (wekaFilePath == null || wekaFilePath.isEmpty())
+				throw new Exception("Weka ARFF file could not be found!");
+
 			// read training data from arff file
 			DataSource source = new DataSource(wekaFilePath);
 			trainingData = source.getDataSet();
