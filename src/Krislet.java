@@ -89,7 +89,7 @@ public class Krislet implements SendCommand {
     //
     public static void main(String a[]) throws SocketException, IOException {
         // setup the logger
-        WekaLogger.setup();
+        WekaLogger.setup(Krislet.class.getName());
         LOGGER.log(Level.INFO, "Krislet starting...");
 
         String hostName = new String("");

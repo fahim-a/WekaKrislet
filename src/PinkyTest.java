@@ -12,7 +12,7 @@ public class PinkyTest {
     public static void main(String[] args) {
         try {
             // setup the logger
-            WekaLogger.setup();
+            WekaLogger.setup(PinkyTest.class.getName());
 
             // read training data from arff file
             DataSource source = new DataSource("lib/weka_test.arff");
