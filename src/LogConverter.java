@@ -65,7 +65,7 @@ public class LogConverter {
             throw new Exception("Attributes and their types do not match");
 
         StringBuilder sb = new StringBuilder();
-        sb.append("@RELEATION " + Property.getInstance().getProperty("weka_relation_name"));
+        sb.append("@RELATION " + Property.getInstance().getProperty("weka_relation_name"));
         sb.append("\n");
         sb.append("\n");
 
