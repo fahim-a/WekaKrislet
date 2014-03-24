@@ -70,6 +70,10 @@ public class PerceivedEnvironment implements Serializable {
 
             if (input != null && input.length == 7) {
 
+                // need to try catch each attempt to parse an attribute. In the
+                // event one fails, mark that specific attribute as being
+                // unknown
+
                 try {
                     ball_dis = Double.parseDouble(input[0]);
                 } catch (NumberFormatException | NullPointerException e) {
@@ -168,6 +172,8 @@ public class PerceivedEnvironment implements Serializable {
         SparseInstance si = new SparseInstance(sampleInstance);
         si.setDataset(sampleInstance.dataset());
 
+        // if the values are set, use them. If not, mark as missing
+
         if (ball_dis != UNKNOWN_VALUE)
             si.setValue(0, ball_dis);
         else
@@ -203,6 +209,8 @@ public class PerceivedEnvironment implements Serializable {
         else
             si.setMissing(6);
 
+        // the action is what we are trying to determine! Explicitly mark it as
+        // missing
         si.setMissing(7);
 
         return si;
