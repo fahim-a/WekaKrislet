@@ -3,6 +3,11 @@ import java.io.Serializable;
 import weka.core.Instance;
 import weka.core.SparseInstance;
 
+/**
+ * Note: Ensure the class attributes are defined in the exact same order in the
+ * properties file
+ * 
+ */
 @SuppressWarnings("serial")
 public class PerceivedEnvironment implements Serializable {
 	public static double UNKNOWN_VALUE = -1d;

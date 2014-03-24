@@ -81,7 +81,6 @@ public class Krislet implements SendCommand {
 		String hostName = new String("");
 		int port = 6000;
 		String team = new String("Krislet3");
-		String trainingLogFile = null;
 
 		try {
 			// First look for parameters
@@ -92,22 +91,10 @@ public class Krislet implements SendCommand {
 					port = Integer.parseInt(a[c + 1]);
 				} else if (a[c].compareTo("-team") == 0) {
 					team = a[c + 1];
-				} else if (a[c].compareTo("-trainingLog") == 0) {
-					trainingLogFile = a[c + 1];
-
-					File f = new File(trainingLogFile);
-					if (!f.exists()) {
-						System.err
-								.println("The specified trainingLog file does not exist!");
-					}
 				} else {
 					throw new Exception();
 				}
 			}
-
-			if (trainingLogFile == null || trainingLogFile.isEmpty())
-				throw new Exception("Training data file could not be found!");
-
 		} catch (Exception e) {
 			System.err.println("");
 			System.err.println("USAGE: krislet [-parameter value]");
@@ -117,7 +104,6 @@ public class Krislet implements SendCommand {
 			System.err.println("    host        host_name    localhost");
 			System.err.println("    port        port_number  6000");
 			System.err.println("    team        team_name    Kris");
-			System.err.println("    trainingLog path         MANDATORY");
 			System.err.println("");
 			System.err.println("    Example:");
 			System.err
@@ -128,15 +114,37 @@ public class Krislet implements SendCommand {
 		}
 
 		try {
-			// TODO Pass into parser class that takes the training log data and
-			// generates the corresponding weka arff file
-			System.out.println("Reading in training file: " + trainingLogFile);
+			// fetch the training log file and ensure it exists
+			String trainingLogFile = Property.getInstance().getProperty(
+					"server_log");
+			System.out.println("Reading training server log file: "
+					+ trainingLogFile);
 
-			String wekaFilePath = ""; // TODO
+			if (trainingLogFile == null || trainingLogFile.isEmpty())
+				throw new Exception("Training data file could not be found!");
+
+			File f = new File(trainingLogFile);
+			if (!f.exists()) {
+				System.err
+						.println("The specified trainingLog file does not exist!");
+			}
+
+			// fetch where we should output the generated WEKA ARFF file
+			String wekaFilePath = Property.getInstance().getProperty(
+					"weka_data_file");
 			System.out.println("Generated Weka ARFF file: " + wekaFilePath);
-
 			if (wekaFilePath == null || wekaFilePath.isEmpty())
 				throw new Exception("Weka ARFF file could not be found!");
+
+			// Pass into parser class that takes the training log data and
+			// generates the corresponding WEKA ARFF file
+			try {
+				LogConverter converter = new LogConverter();
+				converter.createWekaData(trainingLogFile, wekaFilePath);
+			} catch (IOException e) {
+				throw new Exception(
+						"Unable to convert training log data file: " + e);
+			}
 
 			// read training data from arff file
 			DataSource source = new DataSource(wekaFilePath);
@@ -144,25 +152,25 @@ public class Krislet implements SendCommand {
 			if (trainingData.classIndex() == -1)
 				trainingData.setClassIndex(trainingData.numAttributes() - 1);
 
-			// build a J48 tree from the training data
+			// Build a J48 tree from the training data
+			// Use the default WEKA options for now
 			J48 tree = new J48();
 
-			boolean discardAttributes = false; // TODO Read in properties to
-												// determine if certain
-												// attributes should be
-												// discarded and not taken into
-												// account
-			if (discardAttributes) {
+			// determine if we should ignore certain attributes
+			String ignoredAttributes = Property.getInstance().getProperty(
+					"ignored_attributes");
+
+			if (ignoredAttributes != null && !ignoredAttributes.isEmpty()) {
 				Remove rm = new Remove();
 
 				Instance sampleInstance = trainingData.firstInstance();
-				String removedAttributes = "blah, blah"; // TODO Obtain from
-															// properties file
 
 				int[] attributeIndicesToRemove = extractAttributeIndicesToRemove(
-						sampleInstance, removedAttributes);
+						sampleInstance, ignoredAttributes);
 				rm.setAttributeIndicesArray(attributeIndicesToRemove);
 
+				// build a filtered classifier to remove the specified
+				// attributes from the decision tree
 				FilteredClassifier fc = new FilteredClassifier();
 				fc.setFilter(rm);
 				fc.setClassifier(tree);

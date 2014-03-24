@@ -17,7 +17,7 @@ class Memory {
 		m_info = info;
 	}
 
-	public VisualInfo getInfo() {
+	public VisualInfo getCurrentInfo() {
 		return m_info;
 	}
 

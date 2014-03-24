@@ -43,9 +43,11 @@ class Brain extends Thread implements SensorInput {
 				Classifier decisionTree = Krislet.getDecision_tree();
 				Instance sampleInstance = trainingData.firstInstance();
 
-				VisualInfo perceivedEnv = m_memory.getInfo();
-				// TODO Get string extracted from the perceived environment
-				String envString = "0.4,-88.0,26.8,3.0,2.7,-80.0,?";
+				VisualInfo perceivedEnv = m_memory.getCurrentInfo();
+				// Get string extracted from the perceived environment
+				DataInstances di = new DataInstances(perceivedEnv);
+				// "0.4,-88.0,26.8,3.0,2.7,-80.0,?";
+				String envString = di.getInputMessage();
 
 				PerceivedEnvironment pe = new PerceivedEnvironment(envString);
 				SoccerAction action = getNextAction(pe, decisionTree,
