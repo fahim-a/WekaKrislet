@@ -392,6 +392,7 @@ public class Krislet implements SendCommand {
     private void send(String message) {
         byte[] buffer = Arrays.copyOf(message.getBytes(), MSG_SIZE);
         try {
+            LOGGER.log(Level.FINEST, "Sending message to server: " + message);
             DatagramPacket packet = new DatagramPacket(buffer, MSG_SIZE, m_host, m_port);
             m_socket.send(packet);
         } catch (IOException e) {
