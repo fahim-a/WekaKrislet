@@ -1,3 +1,3 @@
 public enum PlayerTeam {
-	FRIEND, FOE
+    FRIEND, FOE
 }
