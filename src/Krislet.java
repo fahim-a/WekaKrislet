@@ -201,7 +201,7 @@ public class Krislet implements SendCommand {
     }
 
     private static int[] extractAttributeIndicesToRemove(Instance sampleInstance, String removedAttributes) {
-        String toRemove[] = removedAttributes.split(",");
+        String toRemove[] = removedAttributes.split(";");
         List<String> toRemoveList = Arrays.asList(toRemove);
 
         List<Integer> returnList = new ArrayList<Integer>();
