@@ -18,6 +18,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -36,38 +38,39 @@ import weka.filters.unsupervised.attribute.Remove;
 //
 //***************************************************************************
 public class Krislet implements SendCommand {
-    private static Instances  trainingData;
-    private static Classifier decision_tree;
+    private static Instances    trainingData;
+    private static Classifier   decision_tree;
+    private final static Logger LOGGER          = Logger.getLogger(Krislet.class.getName());
 
     // ===========================================================================
     // Private members
     // class members
-    private DatagramSocket    m_socket;                                                                     // Socket
-                                                                                                             // to
-                                                                                                             // communicate
-                                                                                                             // with
-                                                                                                             // server
-    private InetAddress       m_host;                                                                       // Server
-                                                                                                             // address
-    private int               m_port;                                                                       // server
-                                                                                                             // port
-    private String            m_team;                                                                       // team
-                                                                                                             // name
-    private SensorInput       m_brain;                                                                      // input
-                                                                                                             // for
-                                                                                                             // sensor
-                                                                                                             // information
-    private boolean           m_playing;                                                                    // controls
-                                                                                                             // the
-                                                                                                             // MainLoop
-    private Pattern           message_pattern = Pattern.compile("^\\((\\w+?)\\s.*");
-    private Pattern           hear_pattern    = Pattern.compile("^\\(hear\\s(\\w+?)\\s(\\w+?)\\s(.*)\\).*");
+    private DatagramSocket      m_socket;                                                                     // Socket
+                                                                                                               // to
+                                                                                                               // communicate
+                                                                                                               // with
+                                                                                                               // server
+    private InetAddress         m_host;                                                                       // Server
+                                                                                                               // address
+    private int                 m_port;                                                                       // server
+                                                                                                               // port
+    private String              m_team;                                                                       // team
+                                                                                                               // name
+    private SensorInput         m_brain;                                                                      // input
+                                                                                                               // for
+                                                                                                               // sensor
+                                                                                                               // information
+    private boolean             m_playing;                                                                    // controls
+                                                                                                               // the
+                                                                                                               // MainLoop
+    private Pattern             message_pattern = Pattern.compile("^\\((\\w+?)\\s.*");
+    private Pattern             hear_pattern    = Pattern.compile("^\\(hear\\s(\\w+?)\\s(\\w+?)\\s(.*)\\).*");
     // private Pattern coach_pattern = Pattern.compile("coach");
     // constants
-    private static final int  MSG_SIZE        = 4096;                                                       // Size
-                                                                                                             // of
-                                                                                                             // socket
-                                                                                                             // buffer
+    private static final int    MSG_SIZE        = 4096;                                                       // Size
+                                                                                                               // of
+                                                                                                               // socket
+                                                                                                               // buffer
 
     // ===========================================================================
     // Initialization member functions
@@ -92,6 +95,10 @@ public class Krislet implements SendCommand {
     //
     //
     public static void main(String a[]) throws SocketException, IOException {
+        // setup the logger
+        WekaLogger.setup();
+        LOGGER.log(Level.INFO, "Krislet starting...");
+
         String hostName = new String("");
         int port = 6000;
         String team = new String("Krislet3");
@@ -129,19 +136,19 @@ public class Krislet implements SendCommand {
         try {
             // fetch the training log file and ensure it exists
             String trainingLogFile = Property.getInstance().getProperty("server_log");
-            System.out.println("Reading training server log file: " + trainingLogFile);
+            LOGGER.log(Level.INFO, "Reading training server log file: " + trainingLogFile);
 
             if (trainingLogFile == null || trainingLogFile.isEmpty())
                 throw new Exception("Training data file could not be found!");
 
             File f = new File(trainingLogFile);
             if (!f.exists()) {
-                System.err.println("The specified trainingLog file does not exist!");
+                LOGGER.log(Level.SEVERE, "The specified trainingLog file does not exist!");
             }
 
             // fetch where we should output the generated WEKA ARFF file
             String wekaFilePath = Property.getInstance().getProperty("weka_data_file");
-            System.out.println("Generated Weka ARFF file: " + wekaFilePath);
+            LOGGER.log(Level.INFO, "Generated Weka ARFF file: " + wekaFilePath);
             if (wekaFilePath == null || wekaFilePath.isEmpty())
                 throw new Exception("Weka ARFF file could not be found!");
 
@@ -187,6 +194,7 @@ public class Krislet implements SendCommand {
                 tree.buildClassifier(trainingData);
                 decision_tree = tree;
             }
+            LOGGER.log(Level.INFO, "Generated decision tree: " + String.valueOf(decision_tree));
 
             Krislet player = new Krislet(InetAddress.getByName(hostName), port, team);
 
@@ -194,7 +202,7 @@ public class Krislet implements SendCommand {
             player.mainLoop();
 
         } catch (Exception e) {
-            System.err.println("Could not launch Krislet: " + e);
+            LOGGER.log(Level.SEVERE, "Could not launch Krislet: ", e);
         }
     }
 
@@ -388,7 +396,6 @@ public class Krislet implements SendCommand {
         } catch (IOException e) {
             System.err.println("socket sending error " + e);
         }
-
     }
 
     // ---------------------------------------------------------------------------

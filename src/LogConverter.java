@@ -3,12 +3,15 @@ import java.io.BufferedWriter;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class LogConverter {
+    private final static Logger LOGGER           = Logger.getLogger(LogConverter.class.getName());
 
-    private String[] actions          = Property.getInstance().getProperty("actions").split(";");
-    private String[] attributes       = Property.getInstance().getProperty("attributes").split(";");
-    private String[] attributes_types = Property.getInstance().getProperty("attributes_types").split(";");
+    private String[]            actions          = Property.getInstance().getProperty("actions").split(";");
+    private String[]            attributes       = Property.getInstance().getProperty("attributes").split(";");
+    private String[]            attributes_types = Property.getInstance().getProperty("attributes_types").split(";");
 
     /**
      * This method converts the log file to an ARFF file. The log file contains
@@ -42,7 +45,7 @@ public class LogConverter {
                     if (message.startsWith("(" + ac)) {
                         di.setAction(message);
                         writer.write(di.getARFFmessage());
-                        System.out.println(di.getMsg_number() + " - " + di.getARFFmessage());
+                        LOGGER.log(Level.FINE, di.getMsg_number() + " - " + di.getARFFmessage());
                         di = null;
                         break;
                     }

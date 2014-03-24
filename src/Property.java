@@ -3,8 +3,11 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Property {
+    private final static Logger     LOGGER     = Logger.getLogger(Property.class.getName());
 
     private static Property         instance   = null;
     private HashMap<String, String> properties = null;
@@ -19,7 +22,7 @@ public class Property {
             prop.load(in);
             properties = new HashMap<String, String>();
             for (Entry<Object, Object> e : prop.entrySet()) {
-                // System.out.println(e.getKey() + " VALUE: " + e.getValue());
+                LOGGER.log(Level.FINE, e.getKey() + " VALUE: " + e.getValue());
                 properties.put((String) e.getKey(), (String) e.getValue());
             }
             in.close();
