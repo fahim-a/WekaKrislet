@@ -45,32 +45,25 @@ public class Krislet implements SendCommand {
     // ===========================================================================
     // Private members
     // class members
-    private DatagramSocket      m_socket;                                                                     // Socket
-                                                                                                               // to
-                                                                                                               // communicate
-                                                                                                               // with
-                                                                                                               // server
-    private InetAddress         m_host;                                                                       // Server
-                                                                                                               // address
-    private int                 m_port;                                                                       // server
-                                                                                                               // port
-    private String              m_team;                                                                       // team
-                                                                                                               // name
-    private SensorInput         m_brain;                                                                      // input
-                                                                                                               // for
-                                                                                                               // sensor
-                                                                                                               // information
-    private boolean             m_playing;                                                                    // controls
-                                                                                                               // the
-                                                                                                               // MainLoop
+    // Socket to communicate with server
+    private DatagramSocket      m_socket;
+    // Server address
+    private InetAddress         m_host;
+    // server port
+    private int                 m_port;
+    // team name
+    private String              m_team;
+    // input for sensor information
+    private SensorInput         m_brain;
+    // controls the MainLoop
+    private boolean             m_playing;
     private Pattern             message_pattern = Pattern.compile("^\\((\\w+?)\\s.*");
     private Pattern             hear_pattern    = Pattern.compile("^\\(hear\\s(\\w+?)\\s(\\w+?)\\s(.*)\\).*");
     // private Pattern coach_pattern = Pattern.compile("coach");
+
     // constants
-    private static final int    MSG_SIZE        = 4096;                                                       // Size
-                                                                                                               // of
-                                                                                                               // socket
-                                                                                                               // buffer
+    // Size of socket buffer
+    private static final int    MSG_SIZE        = 4096;
 
     // ===========================================================================
     // Initialization member functions
