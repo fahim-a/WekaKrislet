@@ -7,13 +7,13 @@ import weka.core.SparseInstance;
 public class PerceivedEnvironment implements Serializable {
 	public static double UNKNOWN_VALUE = -1d;
 
-	private double distanceToBall = UNKNOWN_VALUE;
-	private double directionToBall = UNKNOWN_VALUE;
-	private double distanceToNet = UNKNOWN_VALUE;
-	private double directionToNet = UNKNOWN_VALUE;
-	private double distanceToPlayer = UNKNOWN_VALUE;
-	private double directionToPlayer = UNKNOWN_VALUE;
-	private PlayerTeam playerTeam = null;
+	private double ball_dis = UNKNOWN_VALUE;
+	private double ball_dir = UNKNOWN_VALUE;
+	private double net_dis = UNKNOWN_VALUE;
+	private double net_dir = UNKNOWN_VALUE;
+	private double player_dis = UNKNOWN_VALUE;
+	private double player_dir = UNKNOWN_VALUE;
+	private PlayerTeam player_team = null;
 
 	/**
 	 * <code>
@@ -40,13 +40,13 @@ public class PerceivedEnvironment implements Serializable {
 			double distanceToPlayer, double directionToPlayer,
 			PlayerTeam playerTeam) {
 		super();
-		this.distanceToBall = distanceToBall;
-		this.directionToBall = directionToBall;
-		this.distanceToNet = distanceToNet;
-		this.directionToNet = directionToNet;
-		this.distanceToPlayer = distanceToPlayer;
-		this.directionToPlayer = directionToPlayer;
-		this.playerTeam = playerTeam;
+		this.ball_dis = distanceToBall;
+		this.ball_dir = directionToBall;
+		this.net_dis = distanceToNet;
+		this.net_dir = directionToNet;
+		this.player_dis = distanceToPlayer;
+		this.player_dir = directionToPlayer;
+		this.player_team = playerTeam;
 	}
 
 	public PerceivedEnvironment() {
@@ -68,37 +68,37 @@ public class PerceivedEnvironment implements Serializable {
 			if (input != null && input.length == 7) {
 
 				try {
-					distanceToBall = Double.parseDouble(input[0]);
+					ball_dis = Double.parseDouble(input[0]);
 				} catch (NumberFormatException | NullPointerException e) {
 				}
 
 				try {
-					directionToBall = Double.parseDouble(input[1]);
+					ball_dir = Double.parseDouble(input[1]);
 				} catch (NumberFormatException | NullPointerException e) {
 				}
 
 				try {
-					distanceToNet = Double.parseDouble(input[2]);
+					net_dis = Double.parseDouble(input[2]);
 				} catch (NumberFormatException | NullPointerException e) {
 				}
 
 				try {
-					directionToNet = Double.parseDouble(input[3]);
+					net_dir = Double.parseDouble(input[3]);
 				} catch (NumberFormatException | NullPointerException e) {
 				}
 
 				try {
-					distanceToPlayer = Double.parseDouble(input[4]);
+					player_dis = Double.parseDouble(input[4]);
 				} catch (NumberFormatException | NullPointerException e) {
 				}
 
 				try {
-					directionToPlayer = Double.parseDouble(input[5]);
+					player_dir = Double.parseDouble(input[5]);
 				} catch (NumberFormatException | NullPointerException e) {
 				}
 
 				try {
-					playerTeam = PlayerTeam.valueOf(input[6]);
+					player_team = PlayerTeam.valueOf(input[6]);
 				} catch (IllegalArgumentException | NullPointerException e) {
 				}
 			}
@@ -106,97 +106,97 @@ public class PerceivedEnvironment implements Serializable {
 	}
 
 	public double getDistanceToBall() {
-		return distanceToBall;
+		return ball_dis;
 	}
 
 	public void setDistanceToBall(double distanceToBall) {
-		this.distanceToBall = distanceToBall;
+		this.ball_dis = distanceToBall;
 	}
 
 	public double getDirectionToBall() {
-		return directionToBall;
+		return ball_dir;
 	}
 
 	public void setDirectionToBall(double directionToBall) {
-		this.directionToBall = directionToBall;
+		this.ball_dir = directionToBall;
 	}
 
 	public double getDistanceToNet() {
-		return distanceToNet;
+		return net_dis;
 	}
 
 	public void setDistanceToNet(double distanceToNet) {
-		this.distanceToNet = distanceToNet;
+		this.net_dis = distanceToNet;
 	}
 
 	public double getDistanceToPlayer() {
-		return distanceToPlayer;
+		return player_dis;
 	}
 
 	public void setDistanceToPlayer(double distanceToPlayer) {
-		this.distanceToPlayer = distanceToPlayer;
+		this.player_dis = distanceToPlayer;
 	}
 
 	public double getDirectionToPlayer() {
-		return directionToPlayer;
+		return player_dir;
 	}
 
 	public void setDirectionToPlayer(double directionToPlayer) {
-		this.directionToPlayer = directionToPlayer;
+		this.player_dir = directionToPlayer;
 	}
 
 	public PlayerTeam getPlayerTeam() {
-		return playerTeam;
+		return player_team;
 	}
 
 	public void setPlayerTeam(PlayerTeam playerTeam) {
-		this.playerTeam = playerTeam;
+		this.player_team = playerTeam;
 	}
 
 	public double getDirectionToNet() {
-		return directionToNet;
+		return net_dir;
 	}
 
 	public void setDirectionToNet(double directionToNet) {
-		this.directionToNet = directionToNet;
+		this.net_dir = directionToNet;
 	}
 
 	public Instance buildWekaInstance(Instance sampleInstance) {
 		SparseInstance si = new SparseInstance(sampleInstance);
 		si.setDataset(sampleInstance.dataset());
 
-		if (distanceToBall != UNKNOWN_VALUE)
-			si.setValue(0, distanceToBall);
+		if (ball_dis != UNKNOWN_VALUE)
+			si.setValue(0, ball_dis);
 		else
 			si.setMissing(0);
 
-		if (directionToBall != UNKNOWN_VALUE)
-			si.setValue(1, directionToBall);
+		if (ball_dir != UNKNOWN_VALUE)
+			si.setValue(1, ball_dir);
 		else
 			si.setMissing(1);
 
-		if (distanceToNet != UNKNOWN_VALUE)
-			si.setValue(2, distanceToNet);
+		if (net_dis != UNKNOWN_VALUE)
+			si.setValue(2, net_dis);
 		else
 			si.setMissing(2);
 
-		if (directionToNet != UNKNOWN_VALUE)
-			si.setValue(3, directionToNet);
+		if (net_dir != UNKNOWN_VALUE)
+			si.setValue(3, net_dir);
 		else
 			si.setMissing(3);
 
-		if (distanceToPlayer != UNKNOWN_VALUE)
-			si.setValue(4, distanceToPlayer);
+		if (player_dis != UNKNOWN_VALUE)
+			si.setValue(4, player_dis);
 		else
 			si.setMissing(4);
 
-		if (directionToPlayer != UNKNOWN_VALUE)
-			si.setValue(5, directionToPlayer);
+		if (player_dir != UNKNOWN_VALUE)
+			si.setValue(5, player_dir);
 		else
 			si.setMissing(5);
 
-		if (playerTeam != null)
-			si.setValue(6, PlayerTeam.FOE.equals(playerTeam) ? 1 : 0);
+		if (player_team != null)
+			si.setValue(6, PlayerTeam.FOE.equals(player_team) ? 1 : 0);
 		else
 			si.setMissing(6);
 
