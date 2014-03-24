@@ -148,7 +148,7 @@ public class Krislet implements SendCommand {
             // Pass into parser class that takes the training log data and
             // generates the corresponding WEKA ARFF file
             try {
-                LogConverter converter = new LogConverter();
+                ServerLogConverter converter = new ServerLogConverter();
                 converter.createWekaData(trainingLogFile, wekaFilePath);
                 LOGGER.log(Level.INFO, "Generated Weka ARFF file: " + wekaFilePath);
             } catch (IOException e) {

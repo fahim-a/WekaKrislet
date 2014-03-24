@@ -6,8 +6,8 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class LogConverter {
-    private final static Logger LOGGER           = Logger.getLogger(LogConverter.class.getName());
+public class ServerLogConverter {
+    private final static Logger LOGGER           = Logger.getLogger(ServerLogConverter.class.getName());
 
     private String[]            actions          = Property.getInstance().getProperty("actions").split(";");
     private String[]            attributes       = Property.getInstance().getProperty("attributes").split(";");
