@@ -55,9 +55,10 @@ public class Brain extends Thread implements SensorInput {
                 String envString = di.getInputMessage();
 
                 PerceivedEnvironment pe = new PerceivedEnvironment(envString);
-                // based on the previously captured behaviour, and current
-                // environment state, try to come up with a suggested action
-                SoccerAction action = getNextAction(pe, decisionTree, sampleInstance);
+                // based on the previously captured behavior, and current
+                // environment state, try to come up with a predicted/suggested
+                // action
+                SoccerAction action = predictNextAction(pe, decisionTree, sampleInstance);
                 invokeKrisletAction(action);
             } catch (Exception e) {
                 LOGGER.log(Level.SEVERE, "Could not determine next action", e);
@@ -104,15 +105,15 @@ public class Brain extends Thread implements SensorInput {
         }
     }
 
-    private SoccerAction getNextAction(PerceivedEnvironment currentEnvironment, Classifier decision_tree,
+    private SoccerAction predictNextAction(PerceivedEnvironment currentEnvironment, Classifier decision_tree,
             Instance sampleInstance) throws Exception {
         // build an instance based on current environment
         Instance envIntstance = currentEnvironment.buildWekaInstance(sampleInstance);
         // let the decision tree classify this and return the index of the
         // action
-        double classResult = decision_tree.classifyInstance(envIntstance);
+        double prediction = decision_tree.classifyInstance(envIntstance);
         // fetch the action based on index (hence ordering is very important)
-        return SoccerAction.values()[(int) classResult];
+        return SoccerAction.values()[(int) prediction];
     }
 
     // ---------------------------------------------------------------------------
