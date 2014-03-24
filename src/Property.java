@@ -17,7 +17,6 @@ public class Property {
         prop = new Properties();
         InputStream input = null;
         try {
-
             InputStream in = getClass().getResourceAsStream("config.properties");
             prop.load(in);
             properties = new HashMap<String, String>();
