@@ -1,19 +1,22 @@
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class DataInstances {
+    private final static Logger LOGGER      = Logger.getLogger(DataInstances.class.getName());
 
-    private VisualInfo     vi;
-    private String         action;
-    private char           my_side;
-    private String         my_team;
-    private static Pattern msg_pattern = Pattern.compile("^\\(see\\s+(\\d+).*");
-    private String         msg_number  = null;
+    private VisualInfo          vi;
+    private String              action;
+    private char                my_side;
+    private String              my_team;
+    private static Pattern      msg_pattern = Pattern.compile("^\\(see\\s+(\\d+).*");
+    private String              msg_number  = null;
     // in a visual message such as '(see 88 ((f l t) 66 -5)...etc ', the message
     // number is 88
-    private String[]       actions     = Property.getInstance().getProperty("actions").split(";");
+    private String[]            actions     = Property.getInstance().getProperty("actions").split(";");
 
     public DataInstances(VisualInfo vi) {
         this.vi = vi;
@@ -26,7 +29,7 @@ public class DataInstances {
             if (m.find())
                 this.msg_number = m.group(1);
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "Encountered error parsing visual info", e);
         }
     }
 

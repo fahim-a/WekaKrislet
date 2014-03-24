@@ -8,13 +8,17 @@
 //    Modified by:      Edgar Acosta
 //    Date:             March 4, 2008
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Pattern;
 
 import weka.classifiers.Classifier;
 import weka.core.Instance;
 import weka.core.Instances;
 
-class Brain extends Thread implements SensorInput {
+public class Brain extends Thread implements SensorInput {
+    private final static Logger LOGGER = Logger.getLogger(Brain.class.getName());
+
     // ---------------------------------------------------------------------------
     // This constructor:
     // - stores connection to krislet
@@ -38,10 +42,12 @@ class Brain extends Thread implements SensorInput {
 
         while (!m_timeOver) {
             try {
+                // fetch pre-loaded decision tree information
                 Instances trainingData = Krislet.getTrainingData();
                 Classifier decisionTree = Krislet.getDecision_tree();
                 Instance sampleInstance = trainingData.firstInstance();
 
+                // fetch the current perceived environment states
                 VisualInfo perceivedEnv = m_memory.getCurrentInfo();
                 // Get string extracted from the perceived environment
                 DataInstances di = new DataInstances(perceivedEnv);
@@ -49,10 +55,14 @@ class Brain extends Thread implements SensorInput {
                 String envString = di.getInputMessage();
 
                 PerceivedEnvironment pe = new PerceivedEnvironment(envString);
+                // based on the previously captured behaviour, and current
+                // environment state, try to come up with a suggested action
                 SoccerAction action = getNextAction(pe, decisionTree, sampleInstance);
                 invokeKrisletAction(action);
             } catch (Exception e) {
-                e.printStackTrace();
+                LOGGER.log(Level.SEVERE, "Could not determine next action", e);
+
+                // do nothing
                 invokeKrisletAction(null);
             }
 
@@ -61,6 +71,7 @@ class Brain extends Thread implements SensorInput {
             try {
                 Thread.sleep(2 * SoccerParams.simulator_step);
             } catch (Exception e) {
+                LOGGER.log(Level.FINE, "Error when waiting for next simulator step", e);
             }
         }
         m_krislet.bye();
@@ -75,7 +86,7 @@ class Brain extends Thread implements SensorInput {
             m_krislet.dash(10 * object.m_distance);
             break;
         case KICK:
-            // We know where is ball and we can kick it
+            // We know where the ball is and we can kick it
             // so look for goal
             if (m_side == 'l')
                 object = m_memory.getObject("goal r");
@@ -95,8 +106,12 @@ class Brain extends Thread implements SensorInput {
 
     private SoccerAction getNextAction(PerceivedEnvironment currentEnvironment, Classifier decision_tree,
             Instance sampleInstance) throws Exception {
+        // build an instance based on current environment
         Instance envIntstance = currentEnvironment.buildWekaInstance(sampleInstance);
+        // let the decision tree classify this and return the index of the
+        // action
         double classResult = decision_tree.classifyInstance(envIntstance);
+        // fetch the action based on index (hence ordering is very important)
         return SoccerAction.values()[(int) classResult];
     }
 

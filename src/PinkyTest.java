@@ -32,7 +32,7 @@ public class PinkyTest {
             SoccerAction decidedAction = getNextAction(getEnvironment(), decision_tree, sampleInstance);
             LOGGER.log(Level.INFO, "Suggestion action: " + String.valueOf(decidedAction));
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "Encountered error", e);
         }
     }
 

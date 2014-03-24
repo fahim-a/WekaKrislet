@@ -30,7 +30,7 @@ public class LogConverter {
             String header = this.getARFFHeader();
             writer.write(header);
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "Encountered retrieving ARFF header information", e);
         }
 
         String message = null;

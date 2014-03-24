@@ -26,13 +26,13 @@ public class Property {
             }
             in.close();
         } catch (IOException ex) {
-            ex.printStackTrace();
+            LOGGER.log(Level.SEVERE, "Encountered error loading properties file", ex);
         } finally {
             if (input != null) {
                 try {
                     input.close();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    LOGGER.log(Level.SEVERE, "Encountered error closing properties file", e);
                 }
             }
         }
