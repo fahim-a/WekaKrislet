@@ -38,14 +38,14 @@ public class LogConverter {
 
         while ((message = reader.readLine()) != null) {
             if (message.startsWith("(see")) {
-
                 di = new DataInstances(new VisualInfo(message));
             } else if (di != null) {
                 for (String ac : this.actions) {
                     if (message.startsWith("(" + ac)) {
                         di.setAction(message);
-                        writer.write(di.getARFFmessage());
-                        LOGGER.log(Level.FINE, di.getMsg_number() + " - " + di.getARFFmessage());
+                        String arffMessage = di.getARFFmessage();
+                        writer.write(arffMessage);
+                        LOGGER.log(Level.FINEST, di.getMsg_number() + " - " + arffMessage);
                         di = null;
                         break;
                     }
