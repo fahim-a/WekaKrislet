@@ -1,11 +1,19 @@
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import weka.classifiers.trees.J48;
 import weka.core.Instance;
 import weka.core.Instances;
 import weka.core.converters.ConverterUtils.DataSource;
 
 public class PinkyTest {
+    private final static Logger LOGGER = Logger.getLogger(PinkyTest.class.getName());
+
     public static void main(String[] args) {
         try {
+            // setup the logger
+            WekaLogger.setup();
+
             // read training data from arff file
             DataSource source = new DataSource("lib/weka.arff");
             Instances trainingData = source.getDataSet();
@@ -17,12 +25,12 @@ public class PinkyTest {
             // build a J48 tree from the training data
             J48 decision_tree = new J48();
             decision_tree.buildClassifier(trainingData);
-            System.out.println(decision_tree);
+            LOGGER.log(Level.INFO, String.valueOf(decision_tree));
 
             // decide on next agent action based on current environment
             // perception and decision tree
             SoccerAction decidedAction = getNextAction(getEnvironment(), decision_tree, sampleInstance);
-            System.out.println(decidedAction);
+            LOGGER.log(Level.INFO, "Suggestion action: " + String.valueOf(decidedAction));
         } catch (Exception e) {
             e.printStackTrace();
         }

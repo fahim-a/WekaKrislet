@@ -117,19 +117,20 @@ public class Krislet implements SendCommand {
                 }
             }
         } catch (Exception e) {
-            System.err.println("");
-            System.err.println("USAGE: krislet [-parameter value]");
-            System.err.println("");
-            System.err.println("    Parameters  value        default");
-            System.err.println("   ------------------------------------");
-            System.err.println("    host        host_name    localhost");
-            System.err.println("    port        port_number  6000");
-            System.err.println("    team        team_name    Kris");
-            System.err.println("");
-            System.err.println("    Example:");
-            System.err.println("      krislet -host www.host.com -port 6000 -team Poland");
-            System.err.println("    or");
-            System.err.println("      krislet -host 193.117.005.223");
+            StringBuilder sb = new StringBuilder("");
+            sb.append("USAGE: krislet [-parameter value]\n\n");
+            sb.append("    Parameters  value        default\n");
+            sb.append("   ------------------------------------\n");
+            sb.append("    host        host_name    localhost\n");
+            sb.append("    port        port_number  6000\n");
+            sb.append("    team        team_name    Kris\n");
+            sb.append("\n");
+            sb.append("    Example:\n");
+            sb.append("      krislet -host www.host.com -port 6000 -team Poland\n");
+            sb.append("    or\n");
+            sb.append("      krislet -host 193.117.005.223\n");
+
+            LOGGER.log(Level.SEVERE, sb.toString(), e);
             return;
         }
 
@@ -148,7 +149,6 @@ public class Krislet implements SendCommand {
 
             // fetch where we should output the generated WEKA ARFF file
             String wekaFilePath = Property.getInstance().getProperty("weka_data_file");
-            LOGGER.log(Level.INFO, "Generated Weka ARFF file: " + wekaFilePath);
             if (wekaFilePath == null || wekaFilePath.isEmpty())
                 throw new Exception("Weka ARFF file could not be found!");
 
@@ -157,6 +157,7 @@ public class Krislet implements SendCommand {
             try {
                 LogConverter converter = new LogConverter();
                 converter.createWekaData(trainingLogFile, wekaFilePath);
+                LOGGER.log(Level.INFO, "Generated Weka ARFF file: " + wekaFilePath);
             } catch (IOException e) {
                 throw new Exception("Unable to convert training log data file: " + e);
             }
@@ -394,7 +395,7 @@ public class Krislet implements SendCommand {
             DatagramPacket packet = new DatagramPacket(buffer, MSG_SIZE, m_host, m_port);
             m_socket.send(packet);
         } catch (IOException e) {
-            System.err.println("socket sending error " + e);
+            LOGGER.log(Level.SEVERE, "socket sending error ", e);
         }
     }
 
@@ -407,9 +408,9 @@ public class Krislet implements SendCommand {
         try {
             m_socket.receive(packet);
         } catch (SocketException e) {
-            System.out.println("shutting down...");
+            LOGGER.log(Level.SEVERE, "shutting down...", e);
         } catch (IOException e) {
-            System.err.println("socket receiving error " + e);
+            LOGGER.log(Level.SEVERE, "socket receiving error ", e);
         }
         return new String(buffer);
     }
