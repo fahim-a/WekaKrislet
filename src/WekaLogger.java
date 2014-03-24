@@ -1,4 +1,5 @@
 import java.io.IOException;
+import java.util.Date;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.FileHandler;
 import java.util.logging.Handler;
@@ -36,5 +37,26 @@ public class WekaLogger {
         console.setFormatter(formatterTxt);
         console.setLevel(Level.INFO);
         logger.addHandler(console);
+
+        // print a separator so it becomes easier to find the logs we are
+        // interested in
+        String line = "New log session started " + new Date() + "\n";
+        String pad = buildPad(line.length(), '=');
+        StringBuilder sb = new StringBuilder();
+        sb.append("\n\n\n\n");
+        sb.append(pad);
+        sb.append(line);
+        sb.append(pad);
+        sb.append("\n\n");
+        logger.log(Level.FINE, sb.toString());
+    }
+
+    public static String buildPad(int capacity, char c) {
+        StringBuilder outputBuffer = new StringBuilder(capacity);
+        for (int i = 0; i < capacity; i++) {
+            outputBuffer.append(c);
+        }
+        outputBuffer.append('\n');
+        return outputBuffer.toString();
     }
 }
