@@ -12,6 +12,6 @@
 </listAttribute>
 <booleanAttribute key="org.eclipse.jdt.launching.ATTR_USE_START_ON_FIRST_THREAD" value="true"/>
 <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="weka.classifiers.trees.J48"/>
-<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-t lib/observation.arff -i"/>
+<stringAttribute key="org.eclipse.jdt.launching.PROGRAM_ARGUMENTS" value="-t lib/weka_test.arff -i"/>
 <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="RoboCup"/>
 </launchConfiguration>
