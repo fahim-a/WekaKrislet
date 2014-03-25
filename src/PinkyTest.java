@@ -30,7 +30,7 @@ public class PinkyTest {
             // decide on next agent action based on current environment
             // perception and decision tree
             SoccerAction decidedAction = getNextAction(getEnvironment(), decision_tree, sampleInstance);
-            LOGGER.log(Level.INFO, "Suggestion action: " + String.valueOf(decidedAction));
+            LOGGER.log(Level.FINE, "Suggested action: " + String.valueOf(decidedAction));
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Encountered error", e);
         }

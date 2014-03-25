@@ -148,9 +148,12 @@ public class Krislet implements SendCommand {
             // Pass into parser class that takes the training log data and
             // generates the corresponding WEKA ARFF file
             try {
+                long startTime = System.currentTimeMillis();
                 ServerLogConverter converter = new ServerLogConverter();
                 converter.createWekaData(trainingLogFile, wekaFilePath);
-                LOGGER.log(Level.INFO, "Generated Weka ARFF file: " + wekaFilePath);
+                LOGGER.log(Level.INFO,
+                        "Generated Weka ARFF file: " + wekaFilePath + "\nTime elapsed = "
+                                + (System.currentTimeMillis() - startTime));
             } catch (IOException e) {
                 throw new Exception("Unable to convert training log data file: " + e);
             }
@@ -161,34 +164,36 @@ public class Krislet implements SendCommand {
             if (trainingData.classIndex() == -1)
                 trainingData.setClassIndex(trainingData.numAttributes() - 1);
 
-            // Build a J48 tree from the training data
-            // Use the default WEKA options for now
-            J48 tree = new J48();
+            try {
+                long startTime = System.currentTimeMillis();
+                // Build a J48 tree from the training data
+                // Use the default WEKA options for now
+                J48 tree = new J48();
 
-            // determine if we should ignore certain attributes
-            String ignoredAttributes = Property.getInstance().getProperty("ignored_attributes");
+                // determine if we should ignore certain attributes
+                String ignoredAttributes = Property.getInstance().getProperty("ignored_attributes");
 
-            if (ignoredAttributes != null && !ignoredAttributes.isEmpty()) {
-                Remove rm = new Remove();
+                if (ignoredAttributes != null && !ignoredAttributes.isEmpty()) {
+                    Instance sampleInstance = trainingData.firstInstance();
 
-                Instance sampleInstance = trainingData.firstInstance();
-
-                int[] attributeIndicesToRemove = extractAttributeIndicesToRemove(sampleInstance, ignoredAttributes);
-                rm.setAttributeIndicesArray(attributeIndicesToRemove);
-
-                // build a filtered classifier to remove the specified
-                // attributes from the decision tree
-                FilteredClassifier fc = new FilteredClassifier();
-                fc.setFilter(rm);
-                fc.setClassifier(tree);
-                // train and make predictions
-                fc.buildClassifier(trainingData);
-                decision_tree = fc;
-            } else {
-                tree.buildClassifier(trainingData);
-                decision_tree = tree;
+                    // build a filtered classifier to remove the specified
+                    // attributes from the decision tree
+                    FilteredClassifier fc = new FilteredClassifier();
+                    fc.setFilter(extractAttributeIndicesToRemove(sampleInstance, ignoredAttributes));
+                    fc.setClassifier(tree);
+                    // train and make predictions on the filtered J48 tree
+                    fc.buildClassifier(trainingData);
+                    decision_tree = fc;
+                } else {
+                    // train and make predictions on the J48 tree
+                    tree.buildClassifier(trainingData);
+                    decision_tree = tree;
+                }
+                LOGGER.log(Level.INFO, "Generated decision tree: " + String.valueOf(decision_tree)
+                        + "\nTime elapsed = " + (System.currentTimeMillis() - startTime) + " ms");
+            } catch (Exception e) {
+                throw new Exception("Unable to generate Weka classifier: " + e);
             }
-            LOGGER.log(Level.INFO, "Generated decision tree: " + String.valueOf(decision_tree));
 
             Krislet player = new Krislet(InetAddress.getByName(hostName), port, team);
 
@@ -200,7 +205,8 @@ public class Krislet implements SendCommand {
         }
     }
 
-    private static int[] extractAttributeIndicesToRemove(Instance sampleInstance, String removedAttributes) {
+    private static Remove extractAttributeIndicesToRemove(Instance sampleInstance, String removedAttributes) {
+        Remove rm = new Remove();
         String toRemove[] = removedAttributes.split(";");
         List<String> toRemoveList = Arrays.asList(toRemove);
 
@@ -222,7 +228,9 @@ public class Krislet implements SendCommand {
         int[] returnArray = new int[returnList.size()];
         for (int j = 0; j < returnList.size(); j++)
             returnArray[j] = returnList.get(j);
-        return returnArray;
+
+        rm.setAttributeIndicesArray(returnArray);
+        return rm;
     }
 
     public static Instances getTrainingData() {

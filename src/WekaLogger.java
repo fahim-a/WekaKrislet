@@ -39,11 +39,12 @@ public class WekaLogger {
             }
         };
 
-        File logFile = new File("weka_log.txt");
+        String fileName = "weka_log.txt";
+        File logFile = new File(fileName);
         boolean fileExistsAlready = logFile.exists();
 
         // log everything to file
-        fileTxt = new FileHandler("weka_log.txt", true);
+        fileTxt = new FileHandler(fileName, false);
         fileTxt.setFormatter(formatterTxt);
         fileTxt.setLevel(Level.ALL);
         logger.addHandler(fileTxt);

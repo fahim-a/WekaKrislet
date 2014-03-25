@@ -131,13 +131,18 @@ public class DataInstances {
                     net_direction = "?";
                 }
             }
-            for (ObjectInfo i : players) {
-                PlayerInfo p = (PlayerInfo) i;
-                sb.append(ball_distance + "," + ball_direction + "," + net_distance + "," + net_direction + ","
-                        + Float.toString(p.m_distance) + "," + Float.toString(p.m_direction) + ","
-                        + (p.m_teamName.isEmpty() ? "?" : (p.m_teamName.equals(this.my_team) ? "friend" : "foe")) + ","
-                        + (withAction == true ? getAction() : "?"));
-                sb.append("\n");
+            if (!players.isEmpty()) {
+                for (ObjectInfo i : players) {
+                    PlayerInfo p = (PlayerInfo) i;
+                    sb.append(ball_distance + "," + ball_direction + "," + net_distance + "," + net_direction + ","
+                            + Float.toString(p.m_distance) + "," + Float.toString(p.m_direction) + ","
+                            + (p.m_teamName.isEmpty() ? "?" : (p.m_teamName.equals(this.my_team) ? "friend" : "foe"))
+                            + "," + (withAction == true ? getAction() : "?"));
+                    sb.append("\n");
+                }
+            } else {
+                sb.append(ball_distance + "," + ball_direction + "," + net_distance + "," + net_direction + "," + "?,"
+                        + "?," + "?," + (withAction == true ? getAction() : "?"));
             }
         }
 

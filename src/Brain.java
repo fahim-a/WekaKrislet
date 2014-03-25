@@ -36,30 +36,48 @@ public class Brain extends Thread implements SensorInput {
 
     @Override
     public void run() {
+        if (runWeka())
+            weka();
+        else
+            originalKrislet();
+    }
+
+    public boolean runWeka() {
+        return true;
+    }
+
+    private void weka() {
         // first put it somewhere on my side
         if (Pattern.matches("^before_kick_off.*", m_playMode))
             m_krislet.move(-Math.random() * 52.5, 34 - Math.random() * 68.0);
 
+        // fetch pre-loaded decision tree information
+        Instances trainingData = Krislet.getTrainingData();
+        Classifier decisionTree = Krislet.getDecision_tree();
+        Instance sampleInstance = trainingData.firstInstance();
+
         while (!m_timeOver) {
             try {
-                // fetch pre-loaded decision tree information
-                Instances trainingData = Krislet.getTrainingData();
-                Classifier decisionTree = Krislet.getDecision_tree();
-                Instance sampleInstance = trainingData.firstInstance();
-
+                long startTime = System.currentTimeMillis();
                 // fetch the current perceived environment states
                 VisualInfo perceivedEnv = m_memory.getCurrentInfo();
-                // Get string extracted from the perceived environment
-                DataInstances di = new DataInstances(perceivedEnv);
-                // "0.4,-88.0,26.8,3.0,2.7,-80.0,?";
-                String envString = di.getInputMessage();
+                if (perceivedEnv != null) {
+                    // Get string extracted from the perceived environment
+                    DataInstances di = new DataInstances(perceivedEnv);
+                    // "0.4,-88.0,26.8,3.0,2.7,-80.0,?";
+                    String envString = di.getInputMessage();
 
-                PerceivedEnvironment pe = new PerceivedEnvironment(envString);
-                // based on the previously captured behavior, and current
-                // environment state, try to come up with a predicted/suggested
-                // action
-                SoccerAction action = predictNextAction(pe, decisionTree, sampleInstance);
-                invokeKrisletAction(action);
+                    PerceivedEnvironment pe = new PerceivedEnvironment(envString);
+                    // based on the previously captured behavior, and current
+                    // environment state, try to come up with a
+                    // predicted/suggested action
+                    SoccerAction action = predictNextAction(pe, decisionTree, sampleInstance);
+
+                    LOGGER.log(Level.INFO, "Based on " + envString + "; Predicted action: " + String.valueOf(action)
+                            + "\nTime elapsed = " + (System.currentTimeMillis() - startTime) + " ms");
+
+                    invokeKrisletAction(action);
+                }
             } catch (Exception e) {
                 LOGGER.log(Level.SEVERE, "Could not determine next action", e);
 
@@ -81,28 +99,45 @@ public class Brain extends Thread implements SensorInput {
     private void invokeKrisletAction(SoccerAction action) {
         ObjectInfo object;
 
-        switch (action) {
-        case DASH:
-            object = m_memory.getObject("ball");
-            m_krislet.dash(10 * object.m_distance);
-            break;
-        case KICK:
-            // We know where the ball is and we can kick it
-            // so look for goal
-            if (m_side == 'l')
-                object = m_memory.getObject("goal r");
-            else
-                object = m_memory.getObject("goal l");
-            m_krislet.kick(100, object.m_direction);
-            break;
-        case TURN:
-            m_krislet.turn(40); // TODO Determine proper angle
-            break;
-        default:
-            m_krislet.turn_neck(40);
-            m_memory.waitForNewInfo();
-            break;
+        if (action == null) {
+            instructKrisletToDoNothing();
+        } else {
+            switch (action) {
+            case DASH:
+                object = m_memory.getObject("ball");
+                if (object != null)
+                    m_krislet.dash(10 * object.m_distance);
+                else {
+                    instructKrisletToDoNothing();
+                }
+                break;
+            case KICK:
+                // We know where the ball is and we can kick it
+                // so look for goal
+                if (m_side == 'l')
+                    object = m_memory.getObject("goal r");
+                else
+                    object = m_memory.getObject("goal l");
+
+                if (object != null)
+                    m_krislet.kick(100, object.m_direction);
+                else {
+                    instructKrisletToDoNothing();
+                }
+                break;
+            case TURN:
+                m_krislet.turn(40); // TODO Determine proper angle
+                break;
+            default:
+                instructKrisletToDoNothing();
+                break;
+            }
         }
+    }
+
+    private void instructKrisletToDoNothing() {
+        m_krislet.turn(40);
+        m_memory.waitForNewInfo();
     }
 
     private SoccerAction predictNextAction(PerceivedEnvironment currentEnvironment, Classifier decision_tree,
@@ -139,7 +174,7 @@ public class Brain extends Thread implements SensorInput {
     // Allways know where the goal is.
     // Move to a place on my side on a kick_off
     // ************************************************
-    public void original_run() {
+    private void originalKrislet() {
         ObjectInfo object;
 
         // first put it somewhere on my side
@@ -195,6 +230,12 @@ public class Brain extends Thread implements SensorInput {
     // This function sends see information
     public void see(VisualInfo info) {
         m_memory.store(info);
+
+        DataInstances di = new DataInstances(info);
+        // "0.4,-88.0,26.8,3.0,2.7,-80.0,?";
+        String envString = di.getInputMessage();
+
+        LOGGER.log(Level.INFO, "See = " + envString);
     }
 
     // ---------------------------------------------------------------------------
