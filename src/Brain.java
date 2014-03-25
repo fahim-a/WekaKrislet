@@ -65,7 +65,7 @@ public class Brain extends Thread implements SensorInput {
                     // Get string extracted from the perceived environment
                     DataInstances di = new DataInstances(perceivedEnv);
                     // "0.4,-88.0,26.8,3.0,2.7,-80.0,?";
-                    String envString = di.getInputMessage();
+                    String envString = di.getInputMessage().split("\n")[0];
 
                     PerceivedEnvironment pe = new PerceivedEnvironment(envString);
                     // based on the previously captured behavior, and current
@@ -74,7 +74,7 @@ public class Brain extends Thread implements SensorInput {
                     SoccerAction action = predictNextAction(pe, decisionTree, sampleInstance);
 
                     LOGGER.log(Level.INFO, "Based on " + envString + "; Predicted action: " + String.valueOf(action)
-                            + "\nTime elapsed = " + (System.currentTimeMillis() - startTime) + " ms");
+                            + "; Time elapsed = " + (System.currentTimeMillis() - startTime) + " ms");
 
                     invokeKrisletAction(action);
                 }
@@ -147,8 +147,14 @@ public class Brain extends Thread implements SensorInput {
         // let the decision tree classify this and return the index of the
         // action
         double prediction = decision_tree.classifyInstance(envIntstance);
-        // fetch the action based on index (hence ordering is very important)
-        return SoccerAction.values()[(int) prediction];
+
+        if (Instance.missingValue() == prediction)
+            return null;
+        else {
+            // fetch the action based on index (hence ordering is very
+            // important)
+            return SoccerAction.values()[(int) prediction];
+        }
     }
 
     // ---------------------------------------------------------------------------
@@ -230,12 +236,6 @@ public class Brain extends Thread implements SensorInput {
     // This function sends see information
     public void see(VisualInfo info) {
         m_memory.store(info);
-
-        DataInstances di = new DataInstances(info);
-        // "0.4,-88.0,26.8,3.0,2.7,-80.0,?";
-        String envString = di.getInputMessage();
-
-        LOGGER.log(Level.INFO, "See = " + envString);
     }
 
     // ---------------------------------------------------------------------------
