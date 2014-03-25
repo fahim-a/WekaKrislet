@@ -161,6 +161,8 @@ public class Krislet implements SendCommand {
             // read training data from arff file
             DataSource source = new DataSource(wekaFilePath);
             trainingData = source.getDataSet();
+            if (trainingData == null)
+                throw new Exception("Unable to load ARFF file");
             if (trainingData.classIndex() == -1)
                 trainingData.setClassIndex(trainingData.numAttributes() - 1);
 

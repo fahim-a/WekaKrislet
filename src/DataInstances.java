@@ -142,7 +142,7 @@ public class DataInstances {
                 }
             } else {
                 sb.append(ball_distance + "," + ball_direction + "," + net_distance + "," + net_direction + "," + "?,"
-                        + "?," + "?," + (withAction == true ? getAction() : "?"));
+                        + "?," + "?," + (withAction == true ? getAction() : "?") + "\n");
             }
         }
 
