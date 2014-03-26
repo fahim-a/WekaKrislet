@@ -16,43 +16,14 @@ public class PerceivedEnvironment implements Serializable {
     private double       ball_dir      = UNKNOWN_VALUE;
     private double       net_dis       = UNKNOWN_VALUE;
     private double       net_dir       = UNKNOWN_VALUE;
-    private double       player_dis    = UNKNOWN_VALUE;
-    private double       player_dir    = UNKNOWN_VALUE;
-    private PlayerTeam   player_team   = null;
+    private double       player_1_dis  = UNKNOWN_VALUE;
+    private double       player_1_dir  = UNKNOWN_VALUE;
+    private PlayerTeam   player_1_team = null;
+    private double       player_2_dis  = UNKNOWN_VALUE;
+    private double       player_2_dir  = UNKNOWN_VALUE;
+    private PlayerTeam   player_2_team = null;
 
-    /**
-     * <code>
-     * 
-     * @attribute ball_distance NUMERIC
-     * @attribute ball_direction NUMERIC
-     * @attribute net_distance NUMERIC
-     * @attribute net_direction NUMERIC
-     * @attribute player_distance NUMERIC
-     * @attribute player_direction NUMERIC
-     * @attribute player_team {friend,foe}
-     * @attribute action {dash,turn,kick} </code>
-     * 
-     * @param distanceToBall
-     * @param directionToBall
-     * @param distanceToNet
-     * @param distanceToPlayer
-     * @param directionToPlayer
-     * @param playerTeam
-     */
-
-    public PerceivedEnvironment(double distanceToBall, double directionToBall, double distanceToNet,
-            double directionToNet, double distanceToPlayer, double directionToPlayer, PlayerTeam playerTeam) {
-        super();
-        this.ball_dis = distanceToBall;
-        this.ball_dir = directionToBall;
-        this.net_dis = distanceToNet;
-        this.net_dir = directionToNet;
-        this.player_dis = distanceToPlayer;
-        this.player_dir = directionToPlayer;
-        this.player_team = playerTeam;
-    }
-
-    public PerceivedEnvironment() {
+    private PerceivedEnvironment() {
         super();
     }
 
@@ -61,14 +32,14 @@ public class PerceivedEnvironment implements Serializable {
      * environment
      * 
      * @param envString
-     *            (e.g. '0.4,-88.0,26.8,3.0,2.7,-80.0,?')
+     *            (e.g. '0.4,-88.0,26.8,3.0,2.7,-80.0,?,2.7,-80.0,?')
      */
     public PerceivedEnvironment(String envString) {
-        super();
+        this();
         if (envString != null && !envString.isEmpty()) {
             String[] input = envString.split(",");
 
-            if (input != null && input.length == 7) {
+            if (input != null && input.length == 10) {
 
                 // need to try catch each attempt to parse an attribute. In the
                 // event one fails, mark that specific attribute as being
@@ -95,77 +66,38 @@ public class PerceivedEnvironment implements Serializable {
                 }
 
                 try {
-                    player_dis = Double.parseDouble(input[4]);
+                    player_1_dis = Double.parseDouble(input[4]);
                 } catch (NumberFormatException | NullPointerException e) {
                 }
 
                 try {
-                    player_dir = Double.parseDouble(input[5]);
+                    player_1_dir = Double.parseDouble(input[5]);
                 } catch (NumberFormatException | NullPointerException e) {
                 }
 
                 try {
-                    player_team = PlayerTeam.valueOf(input[6]);
+                    player_1_team = PlayerTeam.valueOf(input[6]);
                 } catch (IllegalArgumentException | NullPointerException e) {
                 }
+
+                try {
+                    player_2_dis = Double.parseDouble(input[7]);
+                } catch (NumberFormatException | NullPointerException e) {
+                }
+
+                try {
+                    player_2_dir = Double.parseDouble(input[8]);
+                } catch (NumberFormatException | NullPointerException e) {
+                }
+
+                try {
+                    player_2_team = PlayerTeam.valueOf(input[9]);
+                } catch (IllegalArgumentException | NullPointerException e) {
+                }
+            } else {
+                throw new IllegalArgumentException("Invalid perceived environment string: " + envString);
             }
         }
-    }
-
-    public double getDistanceToBall() {
-        return ball_dis;
-    }
-
-    public void setDistanceToBall(double distanceToBall) {
-        this.ball_dis = distanceToBall;
-    }
-
-    public double getDirectionToBall() {
-        return ball_dir;
-    }
-
-    public void setDirectionToBall(double directionToBall) {
-        this.ball_dir = directionToBall;
-    }
-
-    public double getDistanceToNet() {
-        return net_dis;
-    }
-
-    public void setDistanceToNet(double distanceToNet) {
-        this.net_dis = distanceToNet;
-    }
-
-    public double getDistanceToPlayer() {
-        return player_dis;
-    }
-
-    public void setDistanceToPlayer(double distanceToPlayer) {
-        this.player_dis = distanceToPlayer;
-    }
-
-    public double getDirectionToPlayer() {
-        return player_dir;
-    }
-
-    public void setDirectionToPlayer(double directionToPlayer) {
-        this.player_dir = directionToPlayer;
-    }
-
-    public PlayerTeam getPlayerTeam() {
-        return player_team;
-    }
-
-    public void setPlayerTeam(PlayerTeam playerTeam) {
-        this.player_team = playerTeam;
-    }
-
-    public double getDirectionToNet() {
-        return net_dir;
-    }
-
-    public void setDirectionToNet(double directionToNet) {
-        this.net_dir = directionToNet;
     }
 
     public Instance buildWekaInstance(Instance sampleInstance) {
@@ -194,24 +126,39 @@ public class PerceivedEnvironment implements Serializable {
         else
             si.setMissing(3);
 
-        if (player_dis != UNKNOWN_VALUE)
-            si.setValue(4, player_dis);
+        if (player_1_dis != UNKNOWN_VALUE)
+            si.setValue(4, player_1_dis);
         else
             si.setMissing(4);
 
-        if (player_dir != UNKNOWN_VALUE)
-            si.setValue(5, player_dir);
+        if (player_1_dir != UNKNOWN_VALUE)
+            si.setValue(5, player_1_dir);
         else
             si.setMissing(5);
 
-        if (player_team != null)
-            si.setValue(6, PlayerTeam.FOE.equals(player_team) ? 1 : 0);
+        if (player_1_team != null)
+            si.setValue(6, PlayerTeam.FOE.equals(player_1_team) ? 1 : 0);
         else
             si.setMissing(6);
 
+        if (player_2_dis != UNKNOWN_VALUE)
+            si.setValue(7, player_1_dis);
+        else
+            si.setMissing(7);
+
+        if (player_2_dir != UNKNOWN_VALUE)
+            si.setValue(8, player_1_dir);
+        else
+            si.setMissing(8);
+
+        if (player_2_team != null)
+            si.setValue(9, PlayerTeam.FOE.equals(player_2_team) ? 1 : 0);
+        else
+            si.setMissing(9);
+
         // the action is what we are trying to determine! Explicitly mark it as
         // missing
-        si.setMissing(7);
+        si.setMissing(10);
 
         return si;
     }
