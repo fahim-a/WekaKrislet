@@ -67,11 +67,10 @@ public class Brain extends Thread implements SensorInput {
                     // "0.4,-88.0,26.8,3.0,2.7,-80.0,?";
                     String envString = di.getInputMessage().split("\n")[0];
 
-                    PerceivedEnvironment pe = new PerceivedEnvironment(envString);
                     // based on the previously captured behavior, and current
                     // environment state, try to come up with a
                     // predicted/suggested action
-                    SoccerAction action = predictNextAction(pe, decisionTree, sampleInstance);
+                    SoccerAction action = predictNextAction(envString, decisionTree, sampleInstance);
 
                     LOGGER.log(Level.INFO, "Based on " + envString + "; Predicted action: " + String.valueOf(action)
                             + "; Time elapsed = " + (System.currentTimeMillis() - startTime) + " ms");
@@ -140,10 +139,10 @@ public class Brain extends Thread implements SensorInput {
         m_memory.waitForNewInfo();
     }
 
-    private SoccerAction predictNextAction(PerceivedEnvironment currentEnvironment, Classifier decision_tree,
-            Instance sampleInstance) throws Exception {
+    private SoccerAction predictNextAction(String currentEnvironment, Classifier decision_tree, Instance sampleInstance)
+            throws Exception {
         // build an instance based on current environment
-        Instance envIntstance = currentEnvironment.buildWekaInstance(sampleInstance);
+        Instance envIntstance = PerceivedEnvironment.buildWekaInstance(currentEnvironment, sampleInstance);
         // let the decision tree classify this and return the index of the
         // action
         double prediction = decision_tree.classifyInstance(envIntstance);

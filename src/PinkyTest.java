@@ -30,25 +30,20 @@ public class PinkyTest {
             // decide on next agent action based on current environment
             // perception and decision tree
             SoccerAction decidedAction = getNextAction(getEnvironment(), decision_tree, sampleInstance);
-            LOGGER.log(Level.FINE, "Suggested action: " + String.valueOf(decidedAction));
+            LOGGER.log(Level.INFO, "Suggested action: " + String.valueOf(decidedAction));
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Encountered error", e);
         }
     }
 
-    private static PerceivedEnvironment getEnvironment() {
+    private static String getEnvironment() {
         // ?,?,66.0,-15.0,60.3,15.0,?,turn
-        // return new PerceivedEnvironment(-1, -1, 66.0, -15.0, 60.3,
-        // 15.0,null);
-        // 0.4,-88.0,26.8,3.0,2.7,-80.0,?,kick
-        // return new PerceivedEnvironment(0.4, -88.0, 26.8, 3.0, 2.7, -80.0,
-        // null);
-        return new PerceivedEnvironment("0.4,-88.0,26.8,3.0,2.7,-80.0,?");
+        return "0.4,-88.0,26.8,3.0,2.7,-80.0,?,kick";
     }
 
-    private static SoccerAction getNextAction(PerceivedEnvironment currentEnvironment, J48 decision_tree,
-            Instance sampleInstance) throws Exception {
-        Instance envIntstance = currentEnvironment.buildWekaInstance(sampleInstance);
+    private static SoccerAction getNextAction(String currentEnvironment, J48 decision_tree, Instance sampleInstance)
+            throws Exception {
+        Instance envIntstance = PerceivedEnvironment.buildWekaInstance(currentEnvironment, sampleInstance);
         double classResult = decision_tree.classifyInstance(envIntstance);
         return SoccerAction.values()[(int) classResult];
     }
