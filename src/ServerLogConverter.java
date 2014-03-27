@@ -12,6 +12,8 @@ public class ServerLogConverter {
     private String[]            actions          = Property.getInstance().getProperty("actions").split(";");
     private String[]            attributes       = Property.getInstance().getProperty("attributes").split(";");
     private String[]            attributes_types = Property.getInstance().getProperty("attributes_types").split(";");
+    private String				team 			 = Property.getInstance().getProperty("player_team");
+    private char				side			 = Property.getInstance().getProperty("player_side").charAt(0);
 
     /**
      * This method converts the log file to an ARFF file. The log file contains
@@ -34,16 +36,16 @@ public class ServerLogConverter {
         }
 
         String message = null;
-        DataInstances di = null;
+        DataInstance di = null;
 
         while ((message = reader.readLine()) != null) {
             if (message.startsWith("(see")) {
-                di = new DataInstances(new VisualInfo(message));
+                di = new DataInstance(new VisualInfo(message), team, side);
             } else if (di != null) {
                 for (String ac : this.actions) {
                     if (message.startsWith("(" + ac)) {
                         di.setAction(message);
-                        String arffMessage = di.getARFFmessage();
+                        String arffMessage = di.toString();
                         writer.write(arffMessage);
                         LOGGER.log(Level.FINEST, di.getMsg_number() + " - " + arffMessage);
                         di = null;
