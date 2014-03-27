@@ -14,7 +14,7 @@ public class PinkyTest {
             // setup the logger
             WekaLogger.setup(PinkyTest.class.getName());
 
-            // read training data from arff file
+            // read training data from ARFF file
             DataSource source = new DataSource("lib/weka_test.arff");
             Instances trainingData = source.getDataSet();
             if (trainingData.classIndex() == -1)

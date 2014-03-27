@@ -55,11 +55,14 @@ public class PerceivedEnvironment {
                 String parsedString = attrString.substring(attrString.indexOf('{') + 1, attrString.indexOf('}'));
                 String[] values = parsedString.split("\\,");
 
+                // iterate over possible values to determine proper index
                 int index = -1;
-                for (int j = 0; j < values.length; j++) {
-                    String value = values[j];
-                    if (value.equals(s))
-                        index = j;
+                if (values != null && values.length > 0) {
+                    for (int j = 0; j < values.length; j++) {
+                        String value = values[j];
+                        if (value.equals(s))
+                            index = j;
+                    }
                 }
 
                 if (index != -1)
