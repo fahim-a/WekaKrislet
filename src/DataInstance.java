@@ -82,7 +82,7 @@ public class DataInstance {
     
     
     private String getObjectAttributes(ObjectInfo objName){
-    	String dis,dir; //distance and direction
+    	String dis; //distance and direction
     	if (objName != null) {
             dis = Float.toString(objName.m_distance);
             //dir = Float.toString(objName.m_direction);
