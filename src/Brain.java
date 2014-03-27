@@ -27,7 +27,7 @@ public class Brain extends Thread implements SensorInput {
         m_timeOver = false;
         m_krislet = krislet;
         m_memory = new Memory();
-        // m_team = team;
+        m_team = team;
         m_side = side;
         // m_number = number;
         m_playMode = playMode;
@@ -63,15 +63,14 @@ public class Brain extends Thread implements SensorInput {
                 VisualInfo perceivedEnv = m_memory.getCurrentInfo();
                 if (perceivedEnv != null) {
                     // Get string extracted from the perceived environment
-                    DataInstances di = new DataInstances(perceivedEnv);
+                    DataInstance di = new DataInstance(perceivedEnv, this.m_team, this.m_side);
                     // "0.4,-88.0,26.8,3.0,2.7,-80.0,?";
-                    String envString = di.getInputMessage().split("\n")[0];
+                    String envString = di.toString();
 
-                    PerceivedEnvironment pe = new PerceivedEnvironment(envString);
                     // based on the previously captured behavior, and current
                     // environment state, try to come up with a
                     // predicted/suggested action
-                    SoccerAction action = predictNextAction(pe, decisionTree, sampleInstance);
+                    SoccerAction action = predictNextAction(envString, decisionTree, sampleInstance);
 
                     LOGGER.log(Level.INFO, "Based on " + envString + "; Predicted action: " + String.valueOf(action)
                             + "; Time elapsed = " + (System.currentTimeMillis() - startTime) + " ms");
@@ -140,10 +139,10 @@ public class Brain extends Thread implements SensorInput {
         m_memory.waitForNewInfo();
     }
 
-    private SoccerAction predictNextAction(PerceivedEnvironment currentEnvironment, Classifier decision_tree,
-            Instance sampleInstance) throws Exception {
+    private SoccerAction predictNextAction(String currentEnvironment, Classifier decision_tree, Instance sampleInstance)
+            throws Exception {
         // build an instance based on current environment
-        Instance envIntstance = currentEnvironment.buildWekaInstance(sampleInstance);
+        Instance envIntstance = PerceivedEnvironment.buildWekaInstance(currentEnvironment, sampleInstance);
         // let the decision tree classify this and return the index of the
         // action
         double prediction = decision_tree.classifyInstance(envIntstance);
@@ -258,6 +257,7 @@ public class Brain extends Thread implements SensorInput {
     private Memory           m_memory;  // place where all information is
                                          // stored
     private char             m_side;
+    private String			 m_team;
     volatile private boolean m_timeOver;
     private String           m_playMode;
 }
