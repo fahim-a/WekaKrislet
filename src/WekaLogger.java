@@ -40,14 +40,14 @@ public class WekaLogger {
         };
 
         // log everything but FINEST to this log file
-        String logFileName = "weka_log.txt";
+        String logFileName = "weka_" + systemName + "_log.txt";
         fileTxt = new FileHandler(logFileName, true);
         fileTxt.setFormatter(formatterTxt);
         fileTxt.setLevel(Level.FINER);
         logger.addHandler(fileTxt);
 
         // log FINEST to this log file
-        String traceLogFileName = "weka_trace_log.txt";
+        String traceLogFileName = "weka_" + systemName + "_log.txt";
         traceFileTxt = new FileHandler(traceLogFileName, true);
         traceFileTxt.setFormatter(formatterTxt);
         traceFileTxt.setLevel(Level.FINEST);
