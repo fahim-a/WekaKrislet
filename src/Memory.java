@@ -4,7 +4,7 @@
 //	Date:			1997/04/28
 //
 
-class Memory {
+public class Memory {
     // ---------------------------------------------------------------------------
     // This constructor:
     // - initializes all variables

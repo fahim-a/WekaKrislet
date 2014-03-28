@@ -4,6 +4,6 @@
 //	Date:			1997/04/28
 //
 
-class SoccerParams {
+public class SoccerParams {
     final static int simulator_step = 100;
 }

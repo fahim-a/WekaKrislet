@@ -21,7 +21,7 @@ import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-class VisualInfo {
+public class VisualInfo {
     private int               m_time;
     public Vector<ObjectInfo> m_objects;
     public String             m_message;

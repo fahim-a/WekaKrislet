@@ -257,7 +257,7 @@ public class Brain extends Thread implements SensorInput {
     private Memory           m_memory;  // place where all information is
                                          // stored
     private char             m_side;
-    private String			 m_team;
+    private String           m_team;
     volatile private boolean m_timeOver;
     private String           m_playMode;
 }

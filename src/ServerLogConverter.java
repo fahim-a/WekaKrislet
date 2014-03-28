@@ -11,11 +11,12 @@ import java.util.regex.Pattern;
 public class ServerLogConverter {
     private final static Logger LOGGER           = Logger.getLogger(ServerLogConverter.class.getName());
 
-    private static Pattern action_msg 	 		 = Pattern.compile("^\\((kick|dash|turn|turn_neck|move|say|change_view|bye)\\s+.*");
+    private static Pattern      action_msg       = Pattern
+                                                         .compile("^\\((kick|dash|turn|turn_neck|move|say|change_view|bye)\\s+.*");
     private String[]            attributes       = Property.getInstance().getProperty("attributes").split(";");
     private String[]            attributes_types = Property.getInstance().getProperty("attributes_types").split(";");
-    private String				team 			 = Property.getInstance().getProperty("player_team");
-    private char				side			 = Property.getInstance().getProperty("player_side").charAt(0);
+    private String              team             = Property.getInstance().getProperty("player_team");
+    private char                side             = Property.getInstance().getProperty("player_side").charAt(0);
 
     /**
      * This method converts the log file to an ARFF file. The log file contains
@@ -44,7 +45,7 @@ public class ServerLogConverter {
             if (message.startsWith("(see")) {
                 di = new DataInstance(new VisualInfo(message), team, side);
             } else if (di != null) {
-                Matcher m = this.action_msg.matcher(message);
+                Matcher m = action_msg.matcher(message);
                 if (m.find()) {
                     di.setAction(m.group(1));
                     String arffMessage = di.toString();
@@ -52,7 +53,7 @@ public class ServerLogConverter {
                     LOGGER.log(Level.FINEST, di.getMsg_number() + " - " + arffMessage);
                     di = null;
                 }
-                
+
             }
         }
         reader.close();

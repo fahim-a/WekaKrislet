@@ -188,14 +188,16 @@ public class Krislet implements SendCommand {
                     // train and make predictions on the filtered J48 tree
                     fc.buildClassifier(trainingData);
                     decision_tree = fc;
-                } else if(Boolean.parseBoolean(Property.getInstance().getProperty("discretized"))){
+                    LOGGER.log(Level.INFO, "Filtering out the following attributes: " + ignoredAttributes);
+                } else if (Boolean.parseBoolean(Property.getInstance().getProperty("discretized"))) {
                     Discretize dis = new Discretize();
                     dis.setInputFormat(trainingData);
                     trainingData = Filter.useFilter(trainingData, dis);
                     tree.buildClassifier(trainingData);
                     decision_tree = tree;
-                } else{
-                	// train and make predictions on the J48 tree
+                    LOGGER.log(Level.INFO, "Discretizing!" + ignoredAttributes);
+                } else {
+                    // train and make predictions on the J48 tree
                     tree.buildClassifier(trainingData);
                     decision_tree = tree;
                 }

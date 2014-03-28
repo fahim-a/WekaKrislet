@@ -5,11 +5,6 @@ import java.util.logging.Logger;
 import weka.core.Attribute;
 import weka.core.Instance;
 
-/**
- * Note: Ensure the class attributes are defined in the exact same order in the
- * properties file
- * 
- */
 public class PerceivedEnvironment {
     private final static Logger LOGGER = Logger.getLogger(Brain.class.getName());
 
