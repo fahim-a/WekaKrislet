@@ -40,7 +40,7 @@ public class PinkyTest {
            WekaLogger.setup(PinkyTest.class.getName());
 
            // read training data from arff file
-           DataSource source = new DataSource(Property.getInstance().getProperty("weka_data_file"));
+           DataSource source = new DataSource("lib/weka_test.arff");
            Instances trainingData = source.getDataSet();
            if (trainingData.classIndex() == -1)
                trainingData.setClassIndex(trainingData.numAttributes() - 1);
@@ -59,8 +59,7 @@ public class PinkyTest {
            	SoccerAction decidedAction = getNextAction(env, decision_tree, sampleInstance);
                //LOGGER.log(Level.INFO, env + " -> Suggested action: " + String.valueOf(decidedAction));
            	System.out.println(env + " -> " + String.valueOf(decidedAction));
-           }
-           
+           }           
        } catch (Exception e) {
            LOGGER.log(Level.SEVERE, "Encountered error", e);
        }
@@ -68,7 +67,7 @@ public class PinkyTest {
 
     private static String getEnvironment() {
         // ?,?,66.0,-15.0,60.3,15.0,?,turn
-        return "";
+        return "0.4,-88.0,26.8,3.0,2.7,-80.0,?,kick";
     }
 
     private static SoccerAction getNextAction(String currentEnvironment, J48 decision_tree, Instance sampleInstance)
