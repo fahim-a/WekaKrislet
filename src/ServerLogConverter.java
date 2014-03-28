@@ -5,11 +5,13 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class ServerLogConverter {
     private final static Logger LOGGER           = Logger.getLogger(ServerLogConverter.class.getName());
 
-    private String[]            actions          = Property.getInstance().getProperty("actions").split(";");
+    private static Pattern action_msg 	 		 = Pattern.compile("^\\((kick|dash|turn|turn_neck|move|say|change_view|bye)\\s+.*");
     private String[]            attributes       = Property.getInstance().getProperty("attributes").split(";");
     private String[]            attributes_types = Property.getInstance().getProperty("attributes_types").split(";");
     private String				team 			 = Property.getInstance().getProperty("player_team");
@@ -42,16 +44,15 @@ public class ServerLogConverter {
             if (message.startsWith("(see")) {
                 di = new DataInstance(new VisualInfo(message), team, side);
             } else if (di != null) {
-                for (String ac : this.actions) {
-                    if (message.startsWith("(" + ac)) {
-                        di.setAction(message);
-                        String arffMessage = di.toString();
-                        writer.write(arffMessage);
-                        LOGGER.log(Level.FINEST, di.getMsg_number() + " - " + arffMessage);
-                        di = null;
-                        break;
-                    }
+                Matcher m = this.action_msg.matcher(message);
+                if (m.find()) {
+                    di.setAction(m.group(1));
+                    String arffMessage = di.toString();
+                    writer.write(arffMessage);
+                    LOGGER.log(Level.FINEST, di.getMsg_number() + " - " + arffMessage);
+                    di = null;
                 }
+                
             }
         }
         reader.close();

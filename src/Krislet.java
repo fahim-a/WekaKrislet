@@ -30,6 +30,8 @@ import weka.core.Attribute;
 import weka.core.Instance;
 import weka.core.Instances;
 import weka.core.converters.ConverterUtils.DataSource;
+import weka.filters.Filter;
+import weka.filters.supervised.attribute.Discretize;
 import weka.filters.unsupervised.attribute.Remove;
 
 //***************************************************************************
@@ -94,7 +96,7 @@ public class Krislet implements SendCommand {
 
         String hostName = new String("");
         int port = 6000;
-        String team = new String("Krislet3");
+        String team = new String("ML_Agent");
 
         try {
             // First look for parameters
@@ -186,8 +188,14 @@ public class Krislet implements SendCommand {
                     // train and make predictions on the filtered J48 tree
                     fc.buildClassifier(trainingData);
                     decision_tree = fc;
-                } else {
-                    // train and make predictions on the J48 tree
+                } else if(Boolean.parseBoolean(Property.getInstance().getProperty("discretized"))){
+                    Discretize dis = new Discretize();
+                    dis.setInputFormat(trainingData);
+                    trainingData = Filter.useFilter(trainingData, dis);
+                    tree.buildClassifier(trainingData);
+                    decision_tree = tree;
+                } else{
+                	// train and make predictions on the J48 tree
                     tree.buildClassifier(trainingData);
                     decision_tree = tree;
                 }
