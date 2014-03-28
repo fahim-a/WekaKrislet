@@ -26,16 +26,20 @@ public class PinkyTest {
                                           };
 
     public static void main(String[] args) {
-        // classifyInstances();
-        // createDataFile();
-        // testRegex();
-    }
-
-    private static void classifyInstances() {
         try {
             // setup the logger
             WekaLogger.setup(PinkyTest.class.getName());
 
+            // classifyInstances();
+            // createDataFile();
+            // testRegex();
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, "Encountered error", e);
+        }
+    }
+
+    public static void classifyInstances() {
+        try {
             // read training data from arff file
             DataSource source = new DataSource("lib/weka_test.arff");
             Instances trainingData = source.getDataSet();
@@ -60,7 +64,7 @@ public class PinkyTest {
         }
     }
 
-    private static SoccerAction getNextAction(String currentEnvironment, J48 decision_tree, Instance sampleInstance)
+    public static SoccerAction getNextAction(String currentEnvironment, J48 decision_tree, Instance sampleInstance)
             throws Exception {
         Instance envIntstance = PerceivedEnvironment.buildWekaInstance(currentEnvironment, sampleInstance);
         double classResult = decision_tree.classifyInstance(envIntstance);
