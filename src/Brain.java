@@ -64,7 +64,6 @@ public class Brain extends Thread implements SensorInput {
                 if (perceivedEnv != null) {
                     // Get string extracted from the perceived environment
                     DataInstance di = new DataInstance(perceivedEnv, this.m_team, this.m_side);
-                    // "0.4,-88.0,26.8,3.0,2.7,-80.0,?";
                     String envString = di.toString();
 
                     // based on the previously captured behavior, and current
