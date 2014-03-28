@@ -53,18 +53,11 @@ public class PinkyTest {
             // perception and decision tree
             for (String env : sampleEnv) {
                 SoccerAction decidedAction = getNextAction(env, decision_tree, sampleInstance);
-                // LOGGER.log(Level.INFO, env + " -> Suggested action: " +
-                // String.valueOf(decidedAction));
-                System.out.println(env + " -> " + String.valueOf(decidedAction));
+                LOGGER.log(Level.INFO, env + " -> Suggested action: " + String.valueOf(decidedAction));
             }
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Encountered error", e);
         }
-    }
-
-    private static String getEnvironment() {
-        // ?,?,66.0,-15.0,60.3,15.0,?,turn
-        return "0.4,-88.0,26.8,3.0,2.7,-80.0,?,kick";
     }
 
     private static SoccerAction getNextAction(String currentEnvironment, J48 decision_tree, Instance sampleInstance)
@@ -82,8 +75,7 @@ public class PinkyTest {
         for (String a : actions) {
             Matcher m = action_msg.matcher(a);
             if (m.find())
-                System.out.println(m.group(1));
-
+                LOGGER.log(Level.INFO, m.group(1));
         }
     }
 
@@ -92,8 +84,7 @@ public class PinkyTest {
             (new ServerLogConverter()).createWekaData(Property.getInstance().getProperty("server_log"), Property
                     .getInstance().getProperty("weka_data_file"));
         } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "Encountered error", e);
         }
     }
 
@@ -146,6 +137,5 @@ public class PinkyTest {
         java.io.BufferedWriter writer = new java.io.BufferedWriter(new java.io.FileWriter("./lib/test_results.arff"));
         writer.write(labeled.toString());
         writer.close();
-
     }
 }

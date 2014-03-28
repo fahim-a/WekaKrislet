@@ -1,4 +1,3 @@
-import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 import java.util.logging.ConsoleHandler;
@@ -11,6 +10,7 @@ import java.util.logging.SimpleFormatter;
 
 public class WekaLogger {
     private static FileHandler     fileTxt;
+    private static FileHandler     traceFileTxt;
     private static SimpleFormatter formatterTxt;
     private static ConsoleHandler  console;
 
@@ -39,15 +39,19 @@ public class WekaLogger {
             }
         };
 
-        String fileName = "weka_log.txt";
-        File logFile = new File(fileName);
-        boolean fileExistsAlready = logFile.exists();
-
-        // log everything to file
-        fileTxt = new FileHandler(fileName, false);
+        // log everything but FINEST to this log file
+        String logFileName = "weka_log.txt";
+        fileTxt = new FileHandler(logFileName, true);
         fileTxt.setFormatter(formatterTxt);
-        fileTxt.setLevel(Level.ALL);
+        fileTxt.setLevel(Level.FINER);
         logger.addHandler(fileTxt);
+
+        // log FINEST to this log file
+        String traceLogFileName = "weka_trace_log.txt";
+        traceFileTxt = new FileHandler(traceLogFileName, true);
+        traceFileTxt.setFormatter(formatterTxt);
+        traceFileTxt.setLevel(Level.FINEST);
+        logger.addHandler(traceFileTxt);
 
         // only log info (and above) msgs in the console
         console = new ConsoleHandler();
@@ -60,8 +64,6 @@ public class WekaLogger {
         String line = systemName + " - Log session started " + new Date() + "\n";
         String pad = buildPad(line.length(), '=');
         StringBuilder sb = new StringBuilder();
-        if (fileExistsAlready)
-            sb.append("\n\n\n\n");
         sb.append(pad);
         sb.append(line);
         sb.append(pad);
