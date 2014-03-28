@@ -65,7 +65,7 @@ public class PerceivedEnvironment {
                 else
                     si.setMissing(i);
             } else {
-                LOGGER.log(Level.INFO, "Encountered an unknown attribute type" + attr);
+                LOGGER.log(Level.WARNING, "Encountered an unknown attribute type" + attr);
                 si.setMissing(i);
             }
 
