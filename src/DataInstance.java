@@ -57,7 +57,7 @@ public class DataInstance {
         this.action = action;
     }
 
-    private ObjectInfo getObject(String name) {
+    public ObjectInfo getObject(String name) {
 
         for (int c = 0; c < vi.m_objects.size(); c++) {
             ObjectInfo object = (ObjectInfo) vi.m_objects.elementAt(c);

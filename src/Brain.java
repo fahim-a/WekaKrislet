@@ -74,13 +74,13 @@ public class Brain extends Thread implements SensorInput {
                     LOGGER.log(Level.INFO, "Based on " + envString + "; Predicted action: " + String.valueOf(action)
                             + "; Time elapsed = " + (System.currentTimeMillis() - startTime) + " ms");
 
-                    invokeKrisletAction(action);
+                    invokeKrisletAction(di, action);
                 }
             } catch (Exception e) {
                 LOGGER.log(Level.SEVERE, "Could not determine next action", e);
 
                 // do nothing
-                invokeKrisletAction(null);
+                instructKrisletToDoNothing();
             }
 
             // sleep one step to ensure that we will not send
@@ -94,7 +94,7 @@ public class Brain extends Thread implements SensorInput {
         m_krislet.bye();
     }
 
-    private void invokeKrisletAction(SoccerAction action) {
+    private void invokeKrisletAction(DataInstance di, SoccerAction action) {
         ObjectInfo object;
 
         if (action == null) {
@@ -102,30 +102,37 @@ public class Brain extends Thread implements SensorInput {
         } else {
             switch (action) {
             case DASH:
-                object = m_memory.getObject("ball");
+                object = di.getObject("ball");
                 if (object != null)
                     m_krislet.dash(10 * object.m_distance);
                 else {
-                    instructKrisletToDoNothing();
+                    instructKrisletToDoNothing(); // TODO We were told to
+                                                  // dash...but we're not?
                 }
                 break;
             case KICK:
                 // We know where the ball is and we can kick it
                 // so look for goal
                 if (m_side == 'l')
-                    object = m_memory.getObject("goal r");
+                    object = di.getObject("goal r");
                 else
-                    object = m_memory.getObject("goal l");
+                    object = di.getObject("goal l");
 
                 if (object != null)
                     m_krislet.kick(100, object.m_direction);
                 else {
-                    instructKrisletToDoNothing();
+                    instructKrisletToDoNothing(); // TODO We were told to
+                                                  // kick...but we're not?
                 }
                 break;
             case TURN:
-                m_krislet.turn(40); // TODO Determine proper angle
+                object = di.getObject("ball");
+                if (object != null) {
+                    m_krislet.turn(object.m_direction);
+                } else
+                    m_krislet.turn(40); // TODO Determine default angle
                 break;
+
             default:
                 instructKrisletToDoNothing();
                 break;
@@ -134,7 +141,6 @@ public class Brain extends Thread implements SensorInput {
     }
 
     private void instructKrisletToDoNothing() {
-        m_krislet.turn(40);
         m_memory.waitForNewInfo();
     }
 
