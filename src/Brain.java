@@ -80,8 +80,8 @@ public class Brain extends Thread implements SensorInput {
             } catch (Exception e) {
                 LOGGER.log(Level.SEVERE, "Could not determine next action", e);
 
-                // do nothing
-                instructKrisletToDoNothing();
+                // invoke the default action
+                defaultAction();
             }
 
             // sleep one step to ensure that we will not send
@@ -99,7 +99,7 @@ public class Brain extends Thread implements SensorInput {
         ObjectInfo object;
 
         if (action == null) {
-            instructKrisletToDoNothing();
+            defaultAction();
         } else {
             switch (action) {
             case DASH:
@@ -107,8 +107,8 @@ public class Brain extends Thread implements SensorInput {
                 if (object != null)
                     m_krislet.dash(10 * object.m_distance);
                 else {
-                    instructKrisletToDoNothing(); // TODO We were told to
-                                                  // dash...but we're not?
+                    defaultAction(); // TODO We were told to
+                                     // dash...but we're not?
                 }
                 break;
             case KICK:
@@ -122,8 +122,8 @@ public class Brain extends Thread implements SensorInput {
                 if (object != null)
                     m_krislet.kick(100, object.m_direction);
                 else {
-                    instructKrisletToDoNothing(); // TODO We were told to
-                                                  // kick...but we're not?
+                    defaultAction(); // TODO We were told to
+                                     // kick...but we're not?
                 }
                 break;
             case TURN:
@@ -135,13 +135,14 @@ public class Brain extends Thread implements SensorInput {
                 break;
 
             default:
-                instructKrisletToDoNothing();
+                defaultAction();
                 break;
             }
         }
     }
 
-    private void instructKrisletToDoNothing() {
+    private void defaultAction() {
+        m_krislet.turn(40);
         m_memory.waitForNewInfo();
     }
 
