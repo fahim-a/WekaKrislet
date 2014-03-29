@@ -72,8 +72,9 @@ public class Brain extends Thread implements SensorInput {
                     SoccerAction action = predictNextAction(envString, decisionTree, sampleInstance);
                     invokeKrisletAction(di, action);
 
-                    LOGGER.log(Level.INFO, "Based on " + envString + "; Predicted action: " + String.valueOf(action)
-                            + "; Time elapsed = " + (System.currentTimeMillis() - startTime) + " ms");
+                    LOGGER.log(Level.INFO,
+                            "Based on " + envString.trim() + "; Predicted action: " + String.valueOf(action)
+                                    + "; Time elapsed = " + (System.currentTimeMillis() - startTime) + " ms");
 
                 }
             } catch (Exception e) {
