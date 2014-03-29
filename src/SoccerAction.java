@@ -6,5 +6,5 @@
  * 
  */
 public enum SoccerAction {
-    DASH, TURN, KICK
+    TURN, DASH, KICK
 }
