@@ -70,11 +70,11 @@ public class Brain extends Thread implements SensorInput {
                     // environment state, try to come up with a
                     // predicted/suggested action
                     SoccerAction action = predictNextAction(envString, decisionTree, sampleInstance);
+                    invokeKrisletAction(di, action);
 
                     LOGGER.log(Level.INFO, "Based on " + envString + "; Predicted action: " + String.valueOf(action)
                             + "; Time elapsed = " + (System.currentTimeMillis() - startTime) + " ms");
 
-                    invokeKrisletAction(di, action);
                 }
             } catch (Exception e) {
                 LOGGER.log(Level.SEVERE, "Could not determine next action", e);
