@@ -14,25 +14,18 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Enumeration;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import weka.classifiers.Classifier;
-import weka.classifiers.meta.FilteredClassifier;
 import weka.classifiers.trees.J48;
-import weka.core.Attribute;
-import weka.core.Instance;
 import weka.core.Instances;
 import weka.core.converters.ConverterUtils.DataSource;
 import weka.filters.Filter;
 import weka.filters.supervised.attribute.Discretize;
-import weka.filters.unsupervised.attribute.Remove;
 
 //***************************************************************************
 //
@@ -177,19 +170,7 @@ public class Krislet implements SendCommand {
                 // determine if we should ignore certain attributes
                 String ignoredAttributes = Property.getInstance().getProperty("ignored_attributes");
 
-                if (ignoredAttributes != null && !ignoredAttributes.isEmpty()) {
-                    Instance sampleInstance = trainingData.firstInstance();
-
-                    // build a filtered classifier to remove the specified
-                    // attributes from the decision tree
-                    FilteredClassifier fc = new FilteredClassifier();
-                    fc.setFilter(extractAttributeIndicesToRemove(sampleInstance, ignoredAttributes));
-                    fc.setClassifier(tree);
-                    // train and make predictions on the filtered J48 tree
-                    fc.buildClassifier(trainingData);
-                    decision_tree = fc;
-                    LOGGER.log(Level.INFO, "Filtering out the following attributes: " + ignoredAttributes);
-                } else if (Boolean.parseBoolean(Property.getInstance().getProperty("discretized"))) {
+                if (Boolean.parseBoolean(Property.getInstance().getProperty("discretized"))) {
                     Discretize dis = new Discretize();
                     dis.setInputFormat(trainingData);
                     trainingData = Filter.useFilter(trainingData, dis);
@@ -215,34 +196,6 @@ public class Krislet implements SendCommand {
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Could not launch Krislet: ", e);
         }
-    }
-
-    private static Remove extractAttributeIndicesToRemove(Instance sampleInstance, String removedAttributes) {
-        Remove rm = new Remove();
-        String toRemove[] = removedAttributes.split(";");
-        List<String> toRemoveList = Arrays.asList(toRemove);
-
-        List<Integer> returnList = new ArrayList<Integer>();
-
-        @SuppressWarnings("rawtypes")
-        Enumeration iter = sampleInstance.enumerateAttributes();
-        int i = 0;
-        while (iter.hasMoreElements()) {
-            Object attr = iter.nextElement();
-            if (attr != null && attr instanceof Attribute) {
-                Attribute a = (Attribute) attr;
-                if (toRemoveList.contains(a.name()))
-                    returnList.add(i);
-            }
-            i++;
-        }
-
-        int[] returnArray = new int[returnList.size()];
-        for (int j = 0; j < returnList.size(); j++)
-            returnArray[j] = returnList.get(j);
-
-        rm.setAttributeIndicesArray(returnArray);
-        return rm;
     }
 
     public static Instances getTrainingData() {
