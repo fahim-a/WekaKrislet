@@ -167,16 +167,13 @@ public class Krislet implements SendCommand {
                 // Use the default WEKA options for now
                 J48 tree = new J48();
 
-                // determine if we should ignore certain attributes
-                String ignoredAttributes = Property.getInstance().getProperty("ignored_attributes");
-
                 if (Boolean.parseBoolean(Property.getInstance().getProperty("discretized"))) {
                     Discretize dis = new Discretize();
                     dis.setInputFormat(trainingData);
                     trainingData = Filter.useFilter(trainingData, dis);
                     tree.buildClassifier(trainingData);
                     decision_tree = tree;
-                    LOGGER.log(Level.INFO, "Discretizing!" + ignoredAttributes);
+                    LOGGER.log(Level.INFO, "Discretizing!");
                 } else {
                     // train and make predictions on the J48 tree
                     tree.buildClassifier(trainingData);
