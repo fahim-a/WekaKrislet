@@ -123,13 +123,15 @@ public class Krislet implements SendCommand {
         }
 
         try {
-            // fetch the training log file and ensure it exists
+            // fetch the training log file
             String trainingLogFile = Property.getInstance().getProperty("server_log");
             LOGGER.log(Level.INFO, "Reading training server log file: " + trainingLogFile);
 
+            // ensure it's not empty
             if (trainingLogFile == null || trainingLogFile.isEmpty())
                 throw new Exception("Training data file could not be found!");
 
+            // ensure file actually exists
             File f = new File(trainingLogFile);
             if (!f.exists()) {
                 LOGGER.log(Level.SEVERE, "The specified trainingLog file does not exist!");
@@ -158,6 +160,8 @@ public class Krislet implements SendCommand {
             trainingData = source.getDataSet();
             if (trainingData == null)
                 throw new Exception("Unable to load ARFF file");
+            // by default the last index is the one we are trying to classify
+            // (i.e. the soccer action attribute)
             if (trainingData.classIndex() == -1)
                 trainingData.setClassIndex(trainingData.numAttributes() - 1);
 
@@ -167,7 +171,9 @@ public class Krislet implements SendCommand {
                 // Use the default WEKA options for now
                 J48 tree = new J48();
 
+                // Discretize option
                 if (Boolean.parseBoolean(Property.getInstance().getProperty("discretized"))) {
+                    // Create a discretize classifier and feed training data into it
                     Discretize dis = new Discretize();
                     dis.setInputFormat(trainingData);
                     trainingData = Filter.useFilter(trainingData, dis);
